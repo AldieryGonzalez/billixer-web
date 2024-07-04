@@ -5,6 +5,7 @@ import {
   Scripts,
   ScrollRestoration,
 } from "@remix-run/react";
+import Navbar from "./components/navbar";
 import "./tailwind.css";
 
 export function Layout({ children }: { children: React.ReactNode }) {
@@ -16,7 +17,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Meta />
         <Links />
       </head>
-      <body>
+      <body className="min-h-svh bg-background font-sans">
+        <Navbar />
         {children}
         <ScrollRestoration />
         <Scripts />

@@ -17,6 +17,10 @@ module.exports = {
       },
     },
     extend: {
+      fontFamily: {
+        lobster: ["Lobster" ],
+        sans: ["Merriweather Sans"],
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -51,6 +55,23 @@ module.exports = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        /* Custom Colors
+        ----------------------------
+        --emerald: 150, 60%, 50%;
+        --paynes-gray: 222, 16%, 39%;
+        --jonquil: 48, 93%, 53%;
+        --sky-blue: 192, 49%, 64%;
+        --------------------------------- */
+        emerald: {
+          DEFAULT: "hsl(var(--emerald))",
+        },
+        paynesGray: {
+          DEFAULT: "hsl(var(--paynes-gray))",
+        },
+        jonquil: {
+          DEFAULT: "hsl(var(--jonquil))",
+        },
+
       },
       borderRadius: {
         lg: "var(--radius)",
