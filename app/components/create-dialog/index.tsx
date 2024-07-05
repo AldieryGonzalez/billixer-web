@@ -1,9 +1,12 @@
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
+  DialogTitle,
   DialogTrigger,
-} from "./ui/dialog";
+} from "~/components/ui/dialog";
+import CreateForm from "./atoms/form";
 
 export default function CreateDialog() {
   return (
@@ -18,10 +21,12 @@ export default function CreateDialog() {
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <h2>Dialog Title</h2>
+          <DialogTitle>Create a Table</DialogTitle>
+          <DialogDescription>
+            Name and configure the table here. Settings cannot be changed later.
+          </DialogDescription>
         </DialogHeader>
-        <h2>Dialog Content</h2>
-        <p>This is the dialog content.</p>
+        <CreateForm />
       </DialogContent>
     </Dialog>
   );
