@@ -7,14 +7,12 @@
 
 .reciept {
   --mask: conic-gradient(
-        from 135deg at top,
-        #0000,
-        #000 1deg 89deg,
-        #0000 90deg
-      )
-      top/2em 51% repeat-x,
-    conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg)
-      calc(50% + 1em) 100%/2em 51% repeat-x;
+      from 135deg at top,
+      #0000,
+      #000 1deg 89deg,
+      #0000 90deg
+    )
+    50%/32px 100%;
   -webkit-mask: var(--mask);
   mask: var(--mask);
 }
