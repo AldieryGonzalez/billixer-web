@@ -32,7 +32,10 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   );
 };
 
-export function Layout({ children }: { children: React.ReactNode }) {
+export default function App() {
+  const { env, session, domainUrl } = useLoaderData<typeof loader>();
+  const { supabase } = useSupabase({ env, session });
+
   return (
     <html lang="en">
       <head>
@@ -42,18 +45,14 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body className="min-h-svh">
-        <Navbar />
-        <div className="mx-4 mt-10 md:mx-16">{children}</div>
+        <Navbar session={session} />
+        <div className="mx-4 mt-10 md:mx-16">
+          <Outlet context={{ supabase, domainUrl }} />
+        </div>
         <Toaster />
         <ScrollRestoration />
         <Scripts />
       </body>
     </html>
   );
-}
-
-export default function App() {
-  const { env, session, domainUrl } = useLoaderData<typeof loader>();
-  const { supabase } = useSupabase({ env, session });
-  return <Outlet context={{ supabase, domainUrl }} />;
 }
