@@ -2,10 +2,10 @@
 module.exports = {
   darkMode: ["class"],
   content: [
-    './pages/**/*.{ts,tsx}',
-    './components/**/*.{ts,tsx}',
-    './app/**/*.{ts,tsx}',
-    './src/**/*.{ts,tsx}',
+    "./pages/**/*.{ts,tsx}",
+    "./components/**/*.{ts,tsx}",
+    "./app/**/*.{ts,tsx}",
+    "./src/**/*.{ts,tsx}",
   ],
   prefix: "",
   theme: {
@@ -18,7 +18,7 @@ module.exports = {
     },
     extend: {
       fontFamily: {
-        lobster: ["Lobster" ],
+        lobster: ["Lobster"],
         sans: ["Merriweather Sans"],
       },
       colors: {
@@ -55,13 +55,6 @@ module.exports = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        /* Custom Colors
-        ----------------------------
-        --emerald: 150, 60%, 50%;
-        --paynes-gray: 222, 16%, 39%;
-        --jonquil: 48, 93%, 53%;
-        --sky-blue: 192, 49%, 64%;
-        --------------------------------- */
         emerald: {
           DEFAULT: "hsl(var(--emerald))",
         },
@@ -71,7 +64,6 @@ module.exports = {
         jonquil: {
           DEFAULT: "hsl(var(--jonquil))",
         },
-
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -95,4 +87,4 @@ module.exports = {
     },
   },
   plugins: [require("tailwindcss-animate")],
-}
+};

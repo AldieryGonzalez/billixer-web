@@ -19,7 +19,7 @@
 
 @layer base {
   :root {
-    --background: 222, 33%, 94%;
+    --background: 222 33% 94%;
     --foreground: 240 10% 3.9%;
 
     --card: 0 0% 100%;
@@ -43,11 +43,10 @@
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
 
-    --emerald: 150, 60%, 50%;
-    --paynes-gray: 222, 16%, 39%;
-    --jonquil: 48, 93%, 53%;
-    --white: 0, 0%, 100%;
-    --sky-blue: 192, 49%, 64%;
+    --emerald: 150 60% 50%;
+    --paynes-gray: 222 16% 39%;
+    --jonquil: 48 93% 53%;
+    --sky-blue: 192 49% 64%;
 
     --border: 240 5.9% 90%;
     --input: 240 5.9% 90%;
