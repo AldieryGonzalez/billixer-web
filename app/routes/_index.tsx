@@ -12,8 +12,6 @@ export const meta: MetaFunction = () => {
 
 export default function Index() {
   const { supabase } = useOutletContext();
-
-  console.log(supabase);
   return (
     <div className="flex h-full flex-col items-center justify-between gap-6 lg:flex-row">
       <div className="flex flex-col items-start justify-start gap-1 text-start lg:self-start">
