@@ -45,7 +45,7 @@ export default function App() {
         <Links />
       </head>
       <body className="min-h-svh">
-        <Navbar session={session} />
+        <Navbar session={session} supabase={supabase} />
         <div className="mx-4 mt-10 md:mx-16">
           <Outlet context={{ supabase, domainUrl }} />
         </div>
