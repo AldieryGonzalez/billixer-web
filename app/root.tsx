@@ -1,13 +1,36 @@
+import { LoaderFunctionArgs } from "@remix-run/node";
 import {
+  json,
   Links,
   Meta,
   Outlet,
   Scripts,
   ScrollRestoration,
+  useLoaderData,
 } from "@remix-run/react";
 import Navbar from "./components/navbar";
 import { Toaster } from "./components/ui/sonner";
+import { useSupabase } from "./lib/supabase";
+import {
+  getSupabaseEnv,
+  getSupabaseWithSessionHeaders,
+} from "./lib/supabase.server";
 import "./tailwind.css";
+
+export const loader = async ({ request }: LoaderFunctionArgs) => {
+  const { session, headers } = await getSupabaseWithSessionHeaders({
+    request,
+  });
+  const domainUrl = process.env.DOMAIN_URL;
+  return json(
+    {
+      env: getSupabaseEnv(),
+      session,
+      domainUrl,
+    },
+    { headers },
+  );
+};
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -30,5 +53,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
-  return <Outlet />;
+  const { env, session, domainUrl } = useLoaderData<typeof loader>();
+  const { supabase } = useSupabase({ env, session });
+  return <Outlet context={{ supabase, domainUrl }} />;
 }
