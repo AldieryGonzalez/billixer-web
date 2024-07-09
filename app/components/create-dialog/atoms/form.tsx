@@ -1,5 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "@remix-run/react";
+import { PostgrestSingleResponse } from "@supabase/supabase-js";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -14,7 +15,15 @@ export const FormSchema = z.object({
   waitingRoom: z.boolean().default(false),
 });
 
-function CreateForm() {
+export type CreateTableFormT = z.infer<typeof FormSchema>;
+
+function CreateForm({
+  action,
+}: {
+  action: (
+    form: CreateTableFormT,
+  ) => Promise<PostgrestSingleResponse<unknown[]>>;
+}) {
   const navigation = useNavigate();
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -23,7 +32,12 @@ function CreateForm() {
     },
   });
 
-  function onSubmit() {
+  async function onSubmit() {
+    const res = await action(form.getValues());
+    if (res.error) {
+      console.error(res);
+      return toast.error(`Error: ${res.error.message}`);
+    }
     toast("Table Created Successfully!");
     navigation("/table");
   }
