@@ -12,6 +12,7 @@ import SwitchInput from "./switch-form";
 export const FormSchema = z.object({
   name: z.string().min(1),
   title: z.string().min(1),
+  description: z.string().min(1),
   waitingRoom: z.boolean().default(false),
 });
 
@@ -58,6 +59,12 @@ function CreateForm({
               name="title"
               label="Title"
               placeholder="Table name"
+            />
+            <FormInput
+              form={form}
+              name="description"
+              label="Description"
+              placeholder="Event Description"
             />
             <SwitchInput
               form={form}

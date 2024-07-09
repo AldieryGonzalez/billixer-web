@@ -19,12 +19,11 @@ export default function Index() {
     // TODO: Add Table to database
     // TODO: Handle User anon auth if not logged in
     const res = await supabase
-      .from("table")
+      .from("mesa")
       .insert([
         {
           title: form.title,
-          description: "Ladescription",
-          code: "12345",
+          description: form.description,
           waiting_room: form.waitingRoom,
         },
       ])
