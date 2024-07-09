@@ -39,7 +39,6 @@ export default function App() {
     domainUrl,
   } = useLoaderData<typeof loader>();
   const { supabase, session } = useSupabase({ env, session: serverSession });
-  console.log({ env, session, domainUrl });
   return (
     <html lang="en">
       <head>

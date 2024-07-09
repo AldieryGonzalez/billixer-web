@@ -29,8 +29,6 @@ export default function Index() {
       ])
       .select();
 
-    console.log(res.data, res.error);
-
     return res;
   };
 

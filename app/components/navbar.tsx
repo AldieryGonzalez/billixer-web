@@ -9,7 +9,6 @@ type NavbarProps = {
 
 export default function Navbar({ session, supabase }: NavbarProps) {
   const loggedOut = session == null;
-  // console.log({ session, supabase });
   function login() {
     supabase.auth.signInWithOAuth({
       provider: "google",
