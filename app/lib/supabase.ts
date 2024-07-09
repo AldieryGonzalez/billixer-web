@@ -1,9 +1,10 @@
 import { useRevalidator } from "@remix-run/react";
 import { createBrowserClient } from "@supabase/ssr";
 import type { Session, SupabaseClient } from "@supabase/supabase-js";
+import { Database } from "database.types";
 import { useEffect, useState } from "react";
 
-export type TypedSupabaseClient = SupabaseClient;
+export type TypedSupabaseClient = SupabaseClient<Database>;
 
 export type SupabaseOutletContext = {
   supabase: TypedSupabaseClient;
@@ -25,6 +26,7 @@ export const useSupabase = ({ env, session }: UseSupabase) => {
   const [supabase] = useState(() =>
     createBrowserClient(env.SUPABASE_URL!, env.SUPABASE_ANON_KEY!),
   );
+  const [clientSession, setClientSession] = useState<Session | null>(session);
   const revalidator = useRevalidator();
 
   const serverAccessToken = session?.access_token;
@@ -34,19 +36,20 @@ export const useSupabase = ({ env, session }: UseSupabase) => {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
       console.log("Auth event happened: ", event, session);
-
       if (session?.access_token !== serverAccessToken) {
         // call loaders
         revalidator.revalidate();
       }
+      setClientSession(session);
     });
 
     return () => {
       subscription.unsubscribe();
     };
-  }, [supabase, serverAccessToken, revalidator]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [supabase, serverAccessToken]);
 
-  return { supabase };
+  return { supabase, session: clientSession };
 };
 
 // export function getRealTimeSubscription(

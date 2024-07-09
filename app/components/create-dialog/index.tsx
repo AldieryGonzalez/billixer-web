@@ -1,3 +1,4 @@
+import { PostgrestSingleResponse } from "@supabase/supabase-js";
 import {
   Dialog,
   DialogContent,
@@ -6,9 +7,15 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "~/components/ui/dialog";
-import CreateForm from "./atoms/form";
+import CreateForm, { CreateTableFormT } from "./atoms/form";
 
-export default function CreateDialog() {
+export default function CreateDialog({
+  action,
+}: {
+  action: (
+    form: CreateTableFormT,
+  ) => Promise<PostgrestSingleResponse<unknown[]>>;
+}) {
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -26,7 +33,7 @@ export default function CreateDialog() {
             Name and configure the table here. Settings cannot be changed later.
           </DialogDescription>
         </DialogHeader>
-        <CreateForm />
+        <CreateForm action={action} />
       </DialogContent>
     </Dialog>
   );
