@@ -4,8 +4,13 @@ import {
   json,
   Outlet,
   useLoaderData,
+  useOutletContext,
   useRouteError,
 } from "@remix-run/react";
+import type { SupabaseClient } from "@supabase/supabase-js";
+import { Database } from "database.types";
+import { useEffect } from "react";
+import { createTableRealtimeClient } from "~/lib/realtime.table";
 import { getSupabaseWithSessionHeadersAndUser } from "~/lib/supabase.server";
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
@@ -42,12 +47,23 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     throw new Error("Table not found");
   }
 
-  return json({ table: tableData, user }, { headers });
+  return json({ table: tableData, user, code: params.code }, { headers });
 }
 
 export type TableContextType = ReturnType<typeof useLoaderData<typeof loader>>;
 export default function TableLayout() {
-  const { table, user } = useLoaderData<typeof loader>();
+  const { table, user, code } = useLoaderData<typeof loader>();
+  const { supabase } = useOutletContext<{
+    supabase: SupabaseClient<Database>;
+  }>();
+
+  useEffect(() => {
+    const channel = createTableRealtimeClient(supabase, code, table.data.id);
+    return () => {
+      channel.unsubscribe();
+      supabase.removeChannel(channel);
+    };
+  }, [code, supabase, table.data.id]);
   return <Outlet context={{ table, user }} />;
 }
 

@@ -24,7 +24,7 @@ type UseSupabase = {
 export const useSupabase = ({ env, session }: UseSupabase) => {
   // Singleton
   const [supabase] = useState(() =>
-    createBrowserClient(env.SUPABASE_URL!, env.SUPABASE_ANON_KEY!),
+    createBrowserClient<Database>(env.SUPABASE_URL!, env.SUPABASE_ANON_KEY!),
   );
   const revalidator = useRevalidator();
 
