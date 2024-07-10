@@ -1,98 +1,16 @@
 import { thumbs } from "@dicebear/collection";
 import { createAvatar } from "@dicebear/core";
+import { useOutletContext } from "@remix-run/react";
+import { User as SessionUser } from "@supabase/supabase-js";
 import { ArrowRightCircle } from "lucide-react";
 import { useMemo } from "react";
+import { TableContextType, TableWithRelations } from "~/lib/types";
 
-const table = {
-  title: "Izziban Sushi",
-  description: "All you can eat sushi",
-  date: "2021-09-01",
-  allConfirmed: true,
-  users: [
-    {
-      name: "John Doe",
-      confirmed: true,
-    },
-    {
-      name: "Jane Doe",
-      confirmed: true,
-    },
-    {
-      name: "Joe Doe",
-      confirmed: false,
-    },
-    {
-      name: "Jack Doe",
-      confirmed: true,
-    },
-    {
-      name: "Jill Doe",
-      confirmed: false,
-    },
-    {
-      name: "James Doe",
-      confirmed: true,
-    },
-    {
-      name: "Jessica Doe",
-      confirmed: true,
-    },
-    {
-      name: "Jason Doe",
-      confirmed: false,
-    },
-    {
-      name: "Jennifer Doe",
-      confirmed: true,
-    },
-    {
-      name: "Jacob Doe",
-      confirmed: false,
-    },
-    {
-      name: "Julia Doe",
-      confirmed: true,
-    },
-    {
-      name: "Justin Doe",
-      confirmed: true,
-    },
-    {
-      name: "Jasmine Doe",
-      confirmed: false,
-    },
-    {
-      name: "Jeremy Doe",
-      confirmed: true,
-    },
-    {
-      name: "Jocelyn Doe",
-      confirmed: true,
-    },
-  ],
-  items: [
-    {
-      name: "AYCE Sushi",
-      price: 29.99,
-      quantity: 3,
-    },
-    {
-      name: "Sojurita",
-      price: 12.99,
-      quantity: 1,
-    },
-    {
-      name: "Sake Bomb",
-      price: 5.99,
-      quantity: 2,
-    },
-  ],
-};
-const user = {
-  name: "John Doe",
-};
-
-export default function Table() {
+export default function Index() {
+  const { table, session } = useOutletContext<TableContextType>();
+  if (!session) {
+    return <p>Table not found</p>;
+  }
   return (
     <div className="w-full">
       <div className="flex justify-between">
@@ -103,14 +21,14 @@ export default function Table() {
       </div>
       <p className="mb-6">{table.description}</p>
       <div className="flex w-full flex-col justify-between gap-10 md:flex-row">
-        <Users />
-        <Bill />
+        <Users table={table} user={session.user} />
+        <Bill table={table} />
       </div>
     </div>
   );
 }
 
-function Bill() {
+function Bill({ table }: { table: TableWithRelations }) {
   return (
     <div className="drop-shadow-2xl">
       <div className="reciept border bg-white p-6 py-12 shadow-2xl">
@@ -131,9 +49,15 @@ function Bill() {
   );
 }
 
-function Users() {
-  const otherUsers = table.users.filter((u) => u.name !== user.name);
-  const currentUser = table.users.find((u) => u.name === user.name);
+function Users({
+  table,
+  user,
+}: {
+  table: TableWithRelations;
+  user: SessionUser;
+}) {
+  const otherUsers = table.users.filter((u) => u.user_id !== user.id);
+  const currentUser = table.users.find((u) => u.user_id === user.id);
   return (
     <div className="grow flex-col rounded-xl bg-jonquil p-4 md:max-w-screen-sm">
       {/* Header */}
@@ -148,8 +72,8 @@ function Users() {
         {currentUser && (
           <div className="flex items-center justify-between gap-20 rounded border-2 border-black/15 bg-background/85 p-3 shadow-md">
             <div className="flex items-center gap-2">
-              <Avatar name={currentUser.name} />
-              <span className="font-bold">{`${currentUser.name} (Me)`}</span>
+              <Avatar name={currentUser.user_info.name} />
+              <span className="font-bold">{`${currentUser.user_info.name} (Me)`}</span>
             </div>
             <span>{currentUser.confirmed ? "✅" : "❌"}</span>
           </div>
@@ -158,11 +82,11 @@ function Users() {
         <div className="flex max-h-64 w-full flex-wrap gap-3 overflow-hidden">
           {otherUsers.map((user) => (
             <div
-              key={user.name}
+              key={user.user_info.name}
               className="flex min-w-24 grow flex-col items-center gap-2 rounded bg-background/85 p-3"
             >
-              <Avatar name={user.name} />
-              <span>{user.name}</span>
+              <Avatar name={user.user_info.name} />
+              <span>{user.user_info.name}</span>
             </div>
           ))}
         </div>

@@ -3,6 +3,7 @@ import {
   parseCookieHeader,
   serializeCookieHeader,
 } from "@supabase/ssr";
+import { Database } from "database.types";
 
 export const getSupabaseEnv = () => ({
   SUPABASE_URL: process.env.SUPABASE_URL!,
@@ -10,29 +11,23 @@ export const getSupabaseEnv = () => ({
 });
 
 export function getSupabaseWithHeaders({ request }: { request: Request }) {
-  const cookies = parseCookieHeader(request.headers.get("Cookie") ?? "");
   const headers = new Headers();
-  const supabase = createServerClient(
+  const supabase = createServerClient<Database>(
     process.env.SUPABASE_URL!,
     process.env.SUPABASE_ANON_KEY!,
     {
       cookies: {
-        get(key) {
-          return cookies[key];
+        getAll() {
+          return parseCookieHeader(request.headers.get("Cookie") ?? "");
         },
-        set(key, value, options) {
-          headers.append(
-            "Set-Cookie",
-            serializeCookieHeader(key, value, options),
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value, options }) =>
+            headers.append(
+              "Set-Cookie",
+              serializeCookieHeader(name, value, options),
+            ),
           );
         },
-        remove(key, options) {
-          headers.append("Set-Cookie", serializeCookieHeader(key, "", options));
-        },
-      },
-      auth: {
-        detectSessionInUrl: true,
-        flowType: "pkce",
       },
     },
   );
