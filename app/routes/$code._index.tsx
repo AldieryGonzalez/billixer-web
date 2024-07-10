@@ -2,33 +2,43 @@ import { thumbs } from "@dicebear/collection";
 import { createAvatar } from "@dicebear/core";
 import { useOutletContext } from "@remix-run/react";
 import { User as SessionUser } from "@supabase/supabase-js";
+import { Tables } from "database.types";
 import { ArrowRightCircle } from "lucide-react";
 import { useMemo } from "react";
-import { TableContextType, TableWithRelations } from "~/lib/types";
+import { TableContextType } from "./$code";
+
+type RawTableT = TableContextType["table"]["data"];
+type UsersWOutInfo = Omit<
+  RawTableT["users"][0],
+  "user_info" | "cardholder_info"
+>;
+type UserWInfo = UsersWOutInfo & {
+  user_info: Tables<"users">;
+  cardholder_info: Tables<"users">;
+};
+type RawTableWOutUsers = Omit<RawTableT, "users">;
+type TableT = RawTableWOutUsers & { users: UserWInfo[] };
 
 export default function Index() {
-  const { table, session } = useOutletContext<TableContextType>();
-  if (!session) {
-    return <p>Table not found</p>;
-  }
+  const { table, user } = useOutletContext<TableContextType>();
   return (
     <div className="w-full">
       <div className="flex justify-between">
-        <h1 className="text-3xl">{table.title}</h1>
+        <h1 className="text-3xl">{table.data.title}</h1>
         <button className="rounded-md border-2 border-black/5 bg-jonquil p-2 shadow hover:bg-jonquil/50">
           Table Settings
         </button>
       </div>
-      <p className="mb-6">{table.description}</p>
+      <p className="mb-6">{table.data.description}</p>
       <div className="flex w-full flex-col justify-between gap-10 md:flex-row">
-        <Users table={table} user={session.user} />
-        <Bill table={table} />
+        <Users table={table.data as unknown as TableT} user={user} />
+        <Bill table={table.data as unknown as TableT} />
       </div>
     </div>
   );
 }
 
-function Bill({ table }: { table: TableWithRelations }) {
+function Bill({ table }: { table: TableT }) {
   return (
     <div className="drop-shadow-2xl">
       <div className="reciept border bg-white p-6 py-12 shadow-2xl">
@@ -49,15 +59,9 @@ function Bill({ table }: { table: TableWithRelations }) {
   );
 }
 
-function Users({
-  table,
-  user,
-}: {
-  table: TableWithRelations;
-  user: SessionUser;
-}) {
-  const otherUsers = table.users.filter((u) => u.user_id !== user.id);
-  const currentUser = table.users.find((u) => u.user_id === user.id);
+function Users({ table, user }: { table: TableT; user: SessionUser }) {
+  const otherUsers = table.users.filter((u) => u.user_info.id !== user.id);
+  const currentUser = table.users.find((u) => u.user_info.id === user.id);
   return (
     <div className="grow flex-col rounded-xl bg-jonquil p-4 md:max-w-screen-sm">
       {/* Header */}
@@ -69,7 +73,7 @@ function Users({
       </div>
       {/* Current User */}
       <div className="flex flex-col gap-3">
-        {currentUser && (
+        {currentUser?.user_info && (
           <div className="flex items-center justify-between gap-20 rounded border-2 border-black/15 bg-background/85 p-3 shadow-md">
             <div className="flex items-center gap-2">
               <Avatar name={currentUser.user_info.name} />
@@ -80,15 +84,18 @@ function Users({
         )}
         {/* Rest of Users */}
         <div className="flex max-h-64 w-full flex-wrap gap-3 overflow-hidden">
-          {otherUsers.map((user) => (
-            <div
-              key={user.user_info.name}
-              className="flex min-w-24 grow flex-col items-center gap-2 rounded bg-background/85 p-3"
-            >
-              <Avatar name={user.user_info.name} />
-              <span>{user.user_info.name}</span>
-            </div>
-          ))}
+          {otherUsers.map(
+            (user) =>
+              user.user_info && (
+                <div
+                  key={user.user_info.name}
+                  className="flex min-w-24 grow flex-col items-center gap-2 rounded bg-background/85 p-3"
+                >
+                  <Avatar name={user.user_info.name} />
+                  <span>{user.user_info.name}</span>
+                </div>
+              ),
+          )}
         </div>
       </div>
     </div>

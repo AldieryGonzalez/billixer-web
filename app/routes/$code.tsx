@@ -6,19 +6,17 @@ import {
   useLoaderData,
   useRouteError,
 } from "@remix-run/react";
-import { getSupabaseWithSessionHeaders } from "~/lib/supabase.server";
+import { getSupabaseWithSessionHeadersAndUser } from "~/lib/supabase.server";
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
-  const { headers, session, supabase } = await getSupabaseWithSessionHeaders({
-    request,
-  });
+  const { headers, session, supabase, user } =
+    await getSupabaseWithSessionHeadersAndUser({
+      request,
+    });
   if (!params.code) {
-    console.log("No code");
     return redirect("/");
   }
-  console.log(JSON.stringify(session));
   if (!session) {
-    console.log("No session");
     return redirect("/");
   }
 
@@ -44,16 +42,13 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     throw new Error("Table not found");
   }
 
-  return json({ table: tableData, session }, { headers });
+  return json({ table: tableData, user }, { headers });
 }
 
+export type TableContextType = ReturnType<typeof useLoaderData<typeof loader>>;
 export default function TableLayout() {
-  const {
-    table: { data: table },
-    session,
-  } = useLoaderData<typeof loader>();
-
-  return <Outlet context={{ table, session }} />;
+  const { table, user } = useLoaderData<typeof loader>();
+  return <Outlet context={{ table, user }} />;
 }
 
 export function ErrorBoundary() {

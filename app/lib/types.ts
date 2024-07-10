@@ -1,4 +1,3 @@
-import type { Session } from "@supabase/supabase-js";
 import { Database } from "database.types";
 
 export type Table = Database["public"]["Tables"]["mesa"]["Row"];
@@ -10,8 +9,4 @@ export type TableUser = Database["public"]["Tables"]["table_users"]["Row"];
 export type TableWithRelations = Table & {
   users: Array<TableUser & { user_info: User; cardholder_info: User }>;
   items: Item[];
-};
-export type TableContextType = {
-  table: TableWithRelations;
-  session: Session | null;
 };

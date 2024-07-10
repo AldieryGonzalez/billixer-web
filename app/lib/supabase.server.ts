@@ -49,3 +49,20 @@ export async function getSupabaseWithSessionHeaders({
 
   return { session, headers, supabase };
 }
+
+export async function getSupabaseWithSessionHeadersAndUser({
+  request,
+}: {
+  request: Request;
+}) {
+  const { session, supabase, headers } = await getSupabaseWithSessionHeaders({
+    request,
+  });
+  const { data } = await supabase.auth.getUser();
+  const user = data.user;
+  if (user == null) {
+    throw new Error("User not found");
+  }
+
+  return { session, user, headers, supabase };
+}
