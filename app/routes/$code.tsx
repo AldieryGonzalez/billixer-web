@@ -30,14 +30,15 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     .select(
       `
       *, 
-      users:table_users (
-        admin, confirmed, paid,
-        user_info:user_id (*),
-        cardholder_info:cardholder_user_id (*)
+      table_users (
+        *
       ),
       items (
         mods, name, price,
         users:user_items (*)
+      ),
+      users (
+        *
       )
       `,
     )
@@ -56,7 +57,6 @@ export default function TableLayout() {
   const { supabase } = useOutletContext<{
     supabase: SupabaseClient<Database>;
   }>();
-
   useEffect(() => {
     const channel = createTableRealtimeClient(supabase, code, table.data.id);
     return () => {

@@ -2,22 +2,11 @@ import { thumbs } from "@dicebear/collection";
 import { createAvatar } from "@dicebear/core";
 import { useOutletContext } from "@remix-run/react";
 import { User as SessionUser } from "@supabase/supabase-js";
-import { Tables } from "database.types";
 import { ArrowRightCircle } from "lucide-react";
 import { useMemo } from "react";
 import { TableContextType } from "./$code";
 
-type RawTableT = TableContextType["table"]["data"];
-type UsersWOutInfo = Omit<
-  RawTableT["users"][0],
-  "user_info" | "cardholder_info"
->;
-type UserWInfo = UsersWOutInfo & {
-  user_info: Tables<"users">;
-  cardholder_info: Tables<"users">;
-};
-type RawTableWOutUsers = Omit<RawTableT, "users">;
-type TableT = RawTableWOutUsers & { users: UserWInfo[] };
+type TableT = TableContextType["table"]["data"];
 
 export default function Index() {
   const { table, user } = useOutletContext<TableContextType>();
@@ -31,8 +20,8 @@ export default function Index() {
       </div>
       <p className="mb-6">{table.data.description}</p>
       <div className="flex w-full flex-col justify-between gap-10 md:flex-row">
-        <Users table={table.data as unknown as TableT} user={user} />
-        <Bill table={table.data as unknown as TableT} />
+        <Users table={table.data} user={user} />
+        <Bill table={table.data} />
       </div>
     </div>
   );
@@ -60,8 +49,17 @@ function Bill({ table }: { table: TableT }) {
 }
 
 function Users({ table, user }: { table: TableT; user: SessionUser }) {
-  const otherUsers = table.users.filter((u) => u.user_info.id !== user.id);
-  const currentUser = table.users.find((u) => u.user_info.id === user.id);
+  const tableUsers = table.table_users.map((u) => {
+    return {
+      ...u,
+      user_info: table.users.find((user) => user.id === u.user_id),
+      cardholder_info: table.users.find(
+        (user) => user.id === u.cardholder_user_id,
+      ),
+    };
+  });
+  const otherUsers = tableUsers.filter((u) => u.user_id !== user.id);
+  const currentUser = tableUsers.find((u) => u.user_id === user.id);
   return (
     <div className="grow flex-col rounded-xl bg-jonquil p-4 md:max-w-screen-sm">
       {/* Header */}
@@ -73,10 +71,10 @@ function Users({ table, user }: { table: TableT; user: SessionUser }) {
       </div>
       {/* Current User */}
       <div className="flex flex-col gap-3">
-        {currentUser?.user_info && (
+        {currentUser && currentUser.user_info && (
           <div className="flex items-center justify-between gap-20 rounded border-2 border-black/15 bg-background/85 p-3 shadow-md">
             <div className="flex items-center gap-2">
-              <Avatar name={currentUser.user_info.name} />
+              <Avatar name={currentUser.user_info?.name} />
               <span className="font-bold">{`${currentUser.user_info.name} (Me)`}</span>
             </div>
             <span>{currentUser.confirmed ? "✅" : "❌"}</span>
