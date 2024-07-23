@@ -38,7 +38,7 @@ export default function App() {
     session: serverSession,
     domainUrl,
   } = useLoaderData<typeof loader>();
-  const { supabase, session } = useSupabase({ env, session: serverSession });
+  const { supabase } = useSupabase({ env, session: serverSession });
   return (
     <html lang="en">
       <head>
@@ -48,7 +48,7 @@ export default function App() {
         <Links />
       </head>
       <body className="min-h-svh">
-        <Navbar session={session} supabase={supabase} />
+        <Navbar session={serverSession} supabase={supabase} />
         <div className="mx-4 mt-10 md:mx-16">
           <Outlet context={{ supabase, domainUrl }} />
         </div>

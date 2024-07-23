@@ -24,9 +24,8 @@ type UseSupabase = {
 export const useSupabase = ({ env, session }: UseSupabase) => {
   // Singleton
   const [supabase] = useState(() =>
-    createBrowserClient(env.SUPABASE_URL!, env.SUPABASE_ANON_KEY!),
+    createBrowserClient<Database>(env.SUPABASE_URL!, env.SUPABASE_ANON_KEY!),
   );
-  const [clientSession, setClientSession] = useState<Session | null>(session);
   const revalidator = useRevalidator();
 
   const serverAccessToken = session?.access_token;
@@ -35,11 +34,9 @@ export const useSupabase = ({ env, session }: UseSupabase) => {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
-      // console.log("Auth event happened: ", event, session);
       if (session?.access_token !== serverAccessToken) {
         revalidator.revalidate();
       }
-      setClientSession(session);
     });
 
     return () => {
@@ -48,7 +45,7 @@ export const useSupabase = ({ env, session }: UseSupabase) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [supabase, serverAccessToken]);
 
-  return { supabase, session: clientSession };
+  return { supabase };
 };
 
 // export function getRealTimeSubscription(
