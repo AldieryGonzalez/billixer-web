@@ -9,8 +9,7 @@ import {
 } from "@remix-run/react";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { Database } from "database.types";
-import { useEffect } from "react";
-import { createTableRealtimeClient } from "~/lib/realtime.table";
+import { useRealtimeTable } from "~/lib/realtime.table";
 import { getSupabaseWithSessionHeadersAndUser } from "~/lib/supabase.server";
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
@@ -34,7 +33,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
         *
       ),
       items (
-        mods, name, price,
+        id, mods, name, price,
         users:user_items (*)
       ),
       users (
@@ -57,14 +56,10 @@ export default function TableLayout() {
   const { supabase } = useOutletContext<{
     supabase: SupabaseClient<Database>;
   }>();
-  useEffect(() => {
-    const channel = createTableRealtimeClient(supabase, code, table.data.id);
-    return () => {
-      channel.unsubscribe();
-      supabase.removeChannel(channel);
-    };
-  }, [code, supabase, table.data.id]);
-  return <Outlet context={{ table, user }} />;
+  const tableData = {
+    data: useRealtimeTable({ initialData: table.data, supabase, code }),
+  };
+  return <Outlet context={{ table: tableData, user }} />;
 }
 
 export function ErrorBoundary() {
