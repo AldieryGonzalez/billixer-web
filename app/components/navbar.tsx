@@ -1,23 +1,27 @@
-import type { SupabaseClient } from "@supabase/supabase-js";
-import { Session } from "@supabase/supabase-js";
+import { useFetcher } from "@remix-run/react";
+import { useFirebase } from "~/contexts/firebase";
+import { signInWithGoogle } from "~/lib/auth/auth";
+import { ActionData } from "~/routes/auth.login";
 import Logo from "./icons/logo";
 
 type NavbarProps = {
-  session: Session | null;
-  supabase: SupabaseClient;
+  loggedIn: boolean;
 };
 
-export default function Navbar({ session, supabase }: NavbarProps) {
-  const loggedOut = session == null;
-  function login() {
-    supabase.auth.signInWithOAuth({
-      provider: "google",
+export default function Navbar({ loggedIn }: NavbarProps) {
+  const fetcher = useFetcher();
+  const { auth } = useFirebase();
+  async function login() {
+    const idToken = await signInWithGoogle(auth);
+    if (!idToken) return console.error("No idToken");
+    fetcher.submit({ idToken } as ActionData, {
+      method: "POST",
+      action: "/auth/login",
     });
   }
   async function logout() {
-    if (!session) return;
-    const { error } = await supabase.auth.signOut();
-    if (error) console.error("Error logging out:", error.message);
+    if (!loggedIn) return;
+    fetcher.submit({}, { method: "POST", action: "/auth/logout" });
   }
 
   return (
@@ -28,19 +32,19 @@ export default function Navbar({ session, supabase }: NavbarProps) {
       </div>
       <nav>
         <ul className="flex space-x-4">
-          {loggedOut ? (
-            <button
-              onClick={login}
-              className="rounded border border-white bg-white px-2 py-1 text-sm font-semibold shadow-md hover:bg-white/75"
-            >
-              Sign In
-            </button>
-          ) : (
+          {loggedIn ? (
             <button
               onClick={logout}
               className="rounded border border-white bg-white px-2 py-1 text-sm font-semibold shadow-md hover:bg-white/75"
             >
               Sign Out
+            </button>
+          ) : (
+            <button
+              onClick={login}
+              className="rounded border border-white bg-white px-2 py-1 text-sm font-semibold shadow-md hover:bg-white/75"
+            >
+              Sign In
             </button>
           )}
         </ul>
