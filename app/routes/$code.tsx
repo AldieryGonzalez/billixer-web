@@ -1,89 +1,68 @@
 import { LoaderFunctionArgs, redirect } from "@remix-run/node";
 import {
-  isRouteErrorResponse,
-  json,
-  Outlet,
-  useLoaderData,
-  useOutletContext,
-  useRouteError,
+    isRouteErrorResponse,
+    json,
+    Outlet,
+    useLoaderData,
+    useRouteError,
 } from "@remix-run/react";
-import type { SupabaseClient } from "@supabase/supabase-js";
-import { Database } from "database.types";
-import { useRealtimeTable } from "~/lib/realtime.table";
-import { getSupabaseWithSessionHeadersAndUser } from "~/lib/supabase.server";
+
+import { useFirebase } from "~/contexts/firebase";
+import { checkSession } from "~/lib/auth/auth.server";
+import { useTable } from "~/lib/db/firestore";
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
-  const { headers, session, supabase, user } =
-    await getSupabaseWithSessionHeadersAndUser({
-      request,
-    });
-  if (!params.code) {
-    return redirect("/");
-  }
-  if (!session) {
-    return redirect("/");
-  }
+    if (!params.code) {
+        return redirect("/");
+    }
+    const sessionInfo = await checkSession(request);
+    if (!sessionInfo) {
+        console.error("No session found");
+        return redirect("/");
+    }
 
-  const tableData = await supabase
-    .from("mesa")
-    .select(
-      `
-      *, 
-      table_users (
-        *
-      ),
-      items (
-        id, mods, name, price,
-        users:user_items (*)
-      ),
-      users (
-        *
-      )
-      `,
-    )
-    .eq("code", params.code)
-    .single();
-  if (tableData.error) {
-    throw new Error("Table not found");
-  }
-
-  return json({ table: tableData, user, code: params.code }, { headers });
+    return json({ session: sessionInfo, code: params.code });
 }
 
-export type TableContextType = ReturnType<typeof useLoaderData<typeof loader>>;
+export type TableContextType = {
+    session: ReturnType<typeof useLoaderData<typeof loader>>["session"];
+    data: NonNullable<ReturnType<typeof useTable>["data"]>;
+};
 export default function TableLayout() {
-  const { table, user, code } = useLoaderData<typeof loader>();
-  const { supabase } = useOutletContext<{
-    supabase: SupabaseClient<Database>;
-  }>();
-  const tableData = {
-    data: useRealtimeTable({ initialData: table.data, supabase, code }),
-  };
-  return <Outlet context={{ table: tableData, user }} />;
+    const { session, code } = useLoaderData<typeof loader>();
+    const { db } = useFirebase();
+    const { data, error } = useTable(db, code);
+    if (error) {
+        throw error;
+    }
+    if (!data) {
+        return <div>Loading...</div>;
+    }
+    return <Outlet context={{ session, data } as TableContextType} />;
 }
 
 export function ErrorBoundary() {
-  const error = useRouteError();
+    const error = useRouteError();
 
-  if (isRouteErrorResponse(error)) {
-    return (
-      <div>
-        <h1>
-          {error.status} {error.statusText}
-        </h1>
-        <p>{error.data}</p>
-      </div>
-    );
-  } else if (error instanceof Error) {
-    return (
-      <div>
-        <h1>Error</h1>
-        <p>{error.message}</p>
-        <p>The stack trace is:</p>
-        <pre>{error.stack}</pre>
-      </div>
-    );
-  } else {
-    return <h1>Unknown Error</h1>;
-  }
+    if (isRouteErrorResponse(error)) {
+        return (
+            <div>
+                <h1>
+                    {error.status} {error.statusText}
+                </h1>
+                <p>{error.data}</p>
+            </div>
+        );
+    } else if (error instanceof Error) {
+        return (
+            <div>
+                <h1>Error</h1>
+                <p>{error.message}</p>
+                <p>The stack trace is:</p>
+                <pre>{error.stack}</pre>
+            </div>
+        );
+    } else {
+        return <h1>Unknown Error</h1>;
+    }
 }

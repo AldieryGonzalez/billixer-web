@@ -1,6 +1,6 @@
 import { LoaderFunctionArgs } from "@remix-run/node";
 import {
-  json,
+  // json,
   Links,
   Meta,
   Outlet,
@@ -8,37 +8,28 @@ import {
   ScrollRestoration,
   useLoaderData,
 } from "@remix-run/react";
+import { getFirebaseEnvs } from "firebase.config";
 import Navbar from "./components/navbar";
 import { Toaster } from "./components/ui/sonner";
-import { useSupabase } from "./lib/supabase";
-import {
-  getSupabaseEnv,
-  getSupabaseWithSessionHeaders,
-} from "./lib/supabase.server";
+import { FirebaseProvider } from "./contexts/firebase";
+import { checkSession } from "./lib/auth/auth.server";
 import "./tailwind.css";
+import Envs from "./ui/envs";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
-  const { session, headers } = await getSupabaseWithSessionHeaders({
-    request,
-  });
-  const domainUrl = process.env.DOMAIN_URL;
-  return json(
-    {
-      env: getSupabaseEnv(),
-      session,
-      domainUrl,
-    },
-    { headers },
-  );
+  const res = await checkSession(request);
+  const firebaseEnvs = getFirebaseEnvs();
+  return {
+    loggedIn: res ? true : false,
+    sesssionInfo: res,
+    firebaseEnvs,
+  };
 };
 
 export default function App() {
-  const {
-    env,
-    session: serverSession,
-    domainUrl,
-  } = useLoaderData<typeof loader>();
-  const { supabase } = useSupabase({ env, session: serverSession });
+  const { sesssionInfo, loggedIn, firebaseEnvs } =
+    useLoaderData<typeof loader>();
+  sesssionInfo;
   return (
     <html lang="en">
       <head>
@@ -48,12 +39,15 @@ export default function App() {
         <Links />
       </head>
       <body className="min-h-svh">
-        <Navbar session={serverSession} supabase={supabase} />
-        <div className="mx-4 mt-10 md:mx-16">
-          <Outlet context={{ supabase, domainUrl }} />
-        </div>
+        <FirebaseProvider firebaseEnvs={firebaseEnvs}>
+          <Navbar loggedIn={loggedIn} />
+          <div className="mx-4 mt-10 md:mx-16">
+            <Outlet />
+          </div>
+        </FirebaseProvider>
         <Toaster />
         <ScrollRestoration />
+        <Envs {...firebaseEnvs} />
         <Scripts />
       </body>
     </html>
