@@ -3,8 +3,17 @@ import { createAvatar } from "@dicebear/core";
 import { ArrowRightCircle } from "lucide-react";
 import { TableContextType } from "./$code";
 
+import { MetaFunction } from "@remix-run/node";
 import { useOutletContext } from "@remix-run/react";
 import { useMemo } from "react";
+
+export const meta: MetaFunction = () => {
+    return [
+        { title: "Billixer" },
+        { name: "description", content: "App for splitting checks and bills" },
+        { name: "viewport", content: "width=device-width, initial-scale=1" },
+    ];
+};
 
 export default function Index() {
     const { data, session } = useOutletContext() as TableContextType;
@@ -26,20 +35,38 @@ export default function Index() {
 }
 
 function Bill({ table }: { table: TableContextType["data"] }) {
+    const total = table.items.reduce((acc, item) => acc + item.price, 0);
+    // const userTotal = table.items.map((item) => {
+    //     item.guests
+    // });
     return (
-        <div className="drop-shadow-2xl">
+        <div className="min-w-36 grow drop-shadow-2xl">
             <div className="reciept border bg-white p-6 py-12 shadow-2xl">
                 <h2 className="mb-3 text-xl font-semibold">Bill</h2>
                 <div className="flex-col gap-4">
-                    {table.items.map((item) => (
-                        <div
-                            key={item.name}
-                            className="flex justify-between gap-20 border-b-2 border-dotted"
-                        >
-                            <span>{item.name}</span>
-                            <span>${item.price}</span>
-                        </div>
-                    ))}
+                    {table.items.length > 0 ? (
+                        table.items.map((item) => (
+                            <div
+                                key={item.name}
+                                className="flex justify-between gap-20 border-b-2 border-dotted"
+                            >
+                                <span>{item.name}</span>
+                                <span>${item.price}</span>
+                            </div>
+                        ))
+                    ) : (
+                        <div>No items</div>
+                    )}
+                </div>
+                <div className="mt-4 border-b-4 border-t-4 border-dotted border-black/15 p-2">
+                    <div className="flex justify-between">
+                        <span>Total</span>
+                        <span>${total}</span>
+                    </div>
+                    <div className="flex justify-between">
+                        <span>Your Total</span>
+                        <span>${total}</span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -63,7 +90,7 @@ function Users({
     const otherUsers = tableUsers.filter((u) => u.uid !== user.uid);
     const currentUser = tableUsers.find((u) => u.uid === user.uid);
     return (
-        <div className="grow flex-col rounded-xl bg-jonquil p-4 md:max-w-screen-sm">
+        <div className="grow-[2] flex-col rounded-xl bg-jonquil p-4 md:max-w-screen-sm">
             {/* Header */}
             <div className="mb-2 flex items-center justify-between">
                 <h2 className="text-xl font-semibold">Users</h2>
