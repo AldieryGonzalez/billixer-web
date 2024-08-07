@@ -66,7 +66,6 @@ export const action: ActionFunction = async ({ request }) => {
                 schema: CreateTableSchema,
             });
             if (submission.status !== "success") {
-                console.log(submission.reply());
                 return submission.reply();
             }
             return await handleCreateTable(submission.value, request);
@@ -76,7 +75,6 @@ export const action: ActionFunction = async ({ request }) => {
                 schema: JoinTableSchema,
             });
             if (submission.status !== "success") {
-                console.log(submission.reply());
                 return submission.reply();
             }
             return await handleJoinTable(submission.value, request);

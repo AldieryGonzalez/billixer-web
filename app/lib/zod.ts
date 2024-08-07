@@ -9,7 +9,6 @@ export const validateForm = <T extends ZodRawShape>(
         schema: schema,
     });
     if (submission.status !== "success") {
-        console.log(submission.reply());
         return [false, submission.reply()];
     }
     return [true, submission.value];

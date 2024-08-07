@@ -42,7 +42,6 @@ export const createTable = async (
         title: payload.title,
         waitlist: [],
     } as TableData;
-    console.log(data);
     await db.collection("tables").doc(tableId).set(data);
     return tableId;
 };

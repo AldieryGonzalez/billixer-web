@@ -60,8 +60,6 @@ function Users({
             uid: uid,
         };
     });
-    console.log("Table Users", tableUsers);
-    console.log("Authed User", user);
     const otherUsers = tableUsers.filter((u) => u.uid !== user.uid);
     const currentUser = tableUsers.find((u) => u.uid === user.uid);
     return (
