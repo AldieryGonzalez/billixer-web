@@ -61,7 +61,7 @@ export const joinTable = async (
     }
     const data = doc.data() as TableData;
     if (data.guests[session.uid]) {
-        return await docRef.set(
+        await docRef.set(
             {
                 guests: {
                     [session.uid]: {
@@ -71,8 +71,9 @@ export const joinTable = async (
             },
             { merge: true },
         );
+        return;
     }
-    return await docRef.set(
+    await docRef.set(
         {
             guests: {
                 [session.uid]: {
@@ -85,4 +86,5 @@ export const joinTable = async (
         },
         { merge: true },
     );
+    return;
 };

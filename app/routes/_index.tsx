@@ -1,7 +1,5 @@
-import { parseWithZod } from "@conform-to/zod";
 import {
     json,
-    redirect,
     type ActionFunctionArgs,
     type MetaFunction,
 } from "@remix-run/node";
@@ -15,15 +13,10 @@ import { ErrorBoundaryComponent } from "@remix-run/react/dist/routeModules";
 import { useEffect } from "react";
 import { toast } from "sonner";
 import CreateDialog from "~/components/create-dialog/index";
-import {
-    CreateTableSchema,
-    CreateTableSchemaT,
-} from "~/components/forms/create-form";
-import JoinForm, {
-    JoinTableSchema,
-    JoinTableSchemaT,
-} from "~/components/forms/join-form";
+import { CreateTableSchema } from "~/components/forms/create-form";
+import JoinForm, { JoinTableSchema } from "~/components/forms/join-form";
 import { createTable, joinTable } from "~/lib/db/firestore.server";
+import { parseFormAndRun } from "~/lib/zod";
 
 export const meta: MetaFunction = () => {
     return [
@@ -32,81 +25,27 @@ export const meta: MetaFunction = () => {
     ];
 };
 
-const handleCreateTable = async (
-    payload: CreateTableSchemaT,
-    request: Request,
-) => {
-    const code = await createTable(payload, request);
-    return redirect(`/${code}`);
-};
-
-const handleJoinTable = async (payload: JoinTableSchemaT, request: Request) => {
-    await joinTable(payload, request);
-    return redirect(`/${payload.tableCode}`);
-};
-
 export const action = async ({ request }: ActionFunctionArgs) => {
     const formData = await request.formData();
     const intent = formData.get("type") as "create" | "join" | null;
     switch (intent) {
         case "create": {
-            const submission = parseWithZod(formData, {
-                schema: CreateTableSchema,
-            });
-            if (submission.status !== "success") {
-                return json({
-                    error: submission.reply(),
-                    status: "error" as const,
-                    intent,
-                    type: "ValidationError" as const,
-                });
-            }
-            try {
-                await handleCreateTable(submission.value, request);
-                return json({
-                    errors: null,
-                    status: "success" as const,
-                    intent,
-                    type: null,
-                });
-            } catch (error) {
-                console.error(error);
-                return json({
-                    error: (error as Error).message,
-                    status: "error" as const,
-                    intent,
-                    type: "FirebaseError" as const,
-                });
-            }
+            return parseFormAndRun(
+                formData,
+                CreateTableSchema,
+                createTable,
+                request,
+                "create",
+            );
         }
         case "join": {
-            const submission = parseWithZod(formData, {
-                schema: JoinTableSchema,
-            });
-            if (submission.status !== "success") {
-                return json({
-                    error: submission.reply(),
-                    status: "error" as const,
-                    intent,
-                    type: "ValidationError" as const,
-                });
-            }
-            try {
-                await handleJoinTable(submission.value, request);
-                return json({
-                    error: null,
-                    status: "success" as const,
-                    intent,
-                    type: null,
-                });
-            } catch (error) {
-                return json({
-                    error: (error as Error).message,
-                    status: "error" as const,
-                    intent,
-                    type: "FirebaseError" as const,
-                });
-            }
+            return parseFormAndRun(
+                formData,
+                JoinTableSchema,
+                joinTable,
+                request,
+                "join",
+            );
         }
         default:
             return json({
