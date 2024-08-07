@@ -20,11 +20,17 @@ export const JoinTableSchema = z.object({
 export type JoinTableSchemaT = z.infer<typeof JoinTableSchema>;
 
 export default function JoinForm() {
-    const lastResult = useActionData<typeof action>();
+    const actionResult = useActionData<typeof action>();
+
+    const s =
+        actionResult?.status === "error" &&
+        actionResult.type === "ValidationError"
+            ? actionResult
+            : null;
     const [form, fields] = useForm<JoinTableSchemaT>({
         shouldValidate: "onBlur",
         shouldRevalidate: "onInput",
-        lastResult,
+        lastResult: s?.error,
         onValidate({ formData }) {
             return parseWithZod(formData, { schema: JoinTableSchema });
         },
@@ -38,6 +44,7 @@ export default function JoinForm() {
             <h3 className="text-xl font-semibold">Join table</h3>
             <input
                 {...getInputProps(fields.type, { type: "hidden" })}
+                key={fields.type.key}
                 value="join"
             />
             <div className="space-y-4">

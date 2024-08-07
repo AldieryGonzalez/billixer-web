@@ -24,12 +24,17 @@ export const CreateTableSchema = z.object({
 export type CreateTableSchemaT = z.infer<typeof CreateTableSchema>;
 
 function CreateForm() {
-    const lastResult = useActionData<typeof action>();
+    const actionResult = useActionData<typeof action>();
+    const s =
+        actionResult?.status === "error" &&
+        actionResult.type === "ValidationError"
+            ? actionResult
+            : null;
     const [form, fields] = useForm<CreateTableSchemaT>({
         constraint: getZodConstraint(CreateTableSchema),
         shouldValidate: "onBlur",
         shouldRevalidate: "onInput",
-        lastResult,
+        lastResult: s?.error,
         onValidate({ formData }) {
             return parseWithZod(formData, { schema: CreateTableSchema });
         },
@@ -42,18 +47,23 @@ function CreateForm() {
         >
             <input
                 {...getInputProps(fields.type, { type: "hidden" })}
+                key={fields.type.key}
                 value="create"
             />
-            <FormInput meta={fields.name} label="Name" />
-            <FormInput meta={fields.title} label="Title" />
-            <FormInput meta={fields.description} label="Description" />
+            <FormInput meta={fields.name} label="Name" autoComplete="off" />
+            <FormInput meta={fields.title} label="Title" autoComplete="off" />
+            <FormInput
+                meta={fields.description}
+                label="Description"
+                autoComplete="off"
+            />
             <FormSwitch
                 meta={fields.waitingRoom}
                 label="Enable waiting room"
                 defaultChecked
             />
             <Button disabled={!form.valid} type="submit">
-                Submit
+                {}
             </Button>
         </Form>
     );
