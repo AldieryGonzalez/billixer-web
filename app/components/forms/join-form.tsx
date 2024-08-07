@@ -1,8 +1,9 @@
 import { getFormProps, getInputProps, useForm } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
-import { Form, useActionData } from "@remix-run/react";
+import { Form, useActionData, useNavigation } from "@remix-run/react";
 import { z } from "zod";
 import { action } from "~/routes/_index";
+import { Spinner } from "../loading/spinner";
 import { Button } from "../ui/button";
 import { FormInput } from "./components/input";
 
@@ -35,33 +36,42 @@ export default function JoinForm() {
             return parseWithZod(formData, { schema: JoinTableSchema });
         },
     });
+    const navigation = useNavigation();
+    const loading = navigation.formAction == "/?index";
     return (
         <Form
             method="POST"
             {...getFormProps(form)}
             className="w-full grow rounded-md border bg-white p-6 shadow-xl"
         >
-            <h3 className="text-xl font-semibold">Join table</h3>
-            <input
-                {...getInputProps(fields.type, { type: "hidden" })}
-                key={fields.type.key}
-                value="join"
-            />
-            <div className="space-y-4">
-                <FormInput
-                    meta={fields.tableCode}
-                    label="Table Code"
-                    placeholder="Table Code (6 characters)"
-                    maxLength={6}
+            <fieldset disabled={loading}>
+                <h3 className="text-xl font-semibold">Join table</h3>
+                <input
+                    {...getInputProps(fields.type, { type: "hidden" })}
+                    key={fields.type.key}
+                    value="join"
                 />
-                <FormInput meta={fields.name} label="Name" />
-            </div>
-            <Button
-                type="submit"
-                className="mt-2 w-full rounded-md bg-sky-500 p-2 text-white"
-            >
-                Join
-            </Button>
+                <div className="space-y-4">
+                    <FormInput
+                        meta={fields.tableCode}
+                        label="Table Code"
+                        placeholder="Table Code (6 characters)"
+                        autoComplete="off"
+                        maxLength={6}
+                    />
+                    <FormInput
+                        meta={fields.name}
+                        label="Name"
+                        autoComplete="off"
+                    />
+                </div>
+                <Button
+                    type="submit"
+                    className="mt-2 w-full rounded-md bg-sky-500 p-2 text-white"
+                >
+                    {loading ? <Spinner /> : "Join"}
+                </Button>
+            </fieldset>
         </Form>
     );
 }

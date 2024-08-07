@@ -1,11 +1,12 @@
 import { getFormProps, getInputProps, useForm } from "@conform-to/react";
 import { getZodConstraint, parseWithZod } from "@conform-to/zod";
-import { Form, useActionData } from "@remix-run/react";
+import { Form, useActionData, useNavigation } from "@remix-run/react";
 import { z } from "zod";
 import { FormInput } from "~/components/forms/components/input";
 import { FormSwitch } from "~/components/forms/components/switch";
 import { Button } from "~/components/ui/button";
 import { action } from "~/routes/_index";
+import { Spinner } from "../loading/spinner";
 
 export const CreateTableSchema = z.object({
     type: z.literal("create"),
@@ -39,32 +40,40 @@ function CreateForm() {
             return parseWithZod(formData, { schema: CreateTableSchema });
         },
     });
+    const navigation = useNavigation();
+    const loading = navigation.formAction == "/?index";
     return (
         <Form
             method="POST"
             {...getFormProps(form)}
-            className="flex max-h-96 w-full flex-col gap-y-2 overflow-auto px-2"
+            className="max-h-96 w-full overflow-auto px-2"
         >
-            <input
-                {...getInputProps(fields.type, { type: "hidden" })}
-                key={fields.type.key}
-                value="create"
-            />
-            <FormInput meta={fields.name} label="Name" autoComplete="off" />
-            <FormInput meta={fields.title} label="Title" autoComplete="off" />
-            <FormInput
-                meta={fields.description}
-                label="Description"
-                autoComplete="off"
-            />
-            <FormSwitch
-                meta={fields.waitingRoom}
-                label="Enable waiting room"
-                defaultChecked
-            />
-            <Button disabled={!form.valid} type="submit">
-                {}
-            </Button>
+            <fieldset disabled={loading} className="flex flex-col gap-y-2">
+                <input
+                    {...getInputProps(fields.type, { type: "hidden" })}
+                    key={fields.type.key}
+                    value="create"
+                />
+                <FormInput meta={fields.name} label="Name" autoComplete="off" />
+                <FormInput
+                    meta={fields.title}
+                    label="Title"
+                    autoComplete="off"
+                />
+                <FormInput
+                    meta={fields.description}
+                    label="Description"
+                    autoComplete="off"
+                />
+                <FormSwitch
+                    meta={fields.waitingRoom}
+                    label="Enable waiting room"
+                    defaultChecked
+                />
+                <Button disabled={!form.valid} type="submit">
+                    {loading ? <Spinner /> : "Create Table"}
+                </Button>
+            </fieldset>
         </Form>
     );
 }
