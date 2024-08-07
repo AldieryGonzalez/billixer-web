@@ -6,6 +6,7 @@ import {
     useLoaderData,
     useRouteError,
 } from "@remix-run/react";
+import { LoadingBillixer } from "~/components/loading/logo";
 
 import { useFirebase } from "~/contexts/firebase";
 import { checkSession } from "~/lib/auth/auth.server";
@@ -36,7 +37,7 @@ export default function TableLayout() {
         throw error;
     }
     if (!data) {
-        return <div>Loading...</div>;
+        return <LoadingBillixer />;
     }
     return <Outlet context={{ session, data } as TableContextType} />;
 }
