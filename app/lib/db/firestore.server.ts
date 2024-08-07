@@ -61,9 +61,18 @@ export const joinTable = async (
     }
     const data = doc.data() as TableData;
     if (data.guests[session.uid]) {
-        throw new Error("You are already on the list");
+        return await docRef.set(
+            {
+                guests: {
+                    [session.uid]: {
+                        name: payload.name,
+                    },
+                },
+            },
+            { merge: true },
+        );
     }
-    const res = await docRef.set(
+    return await docRef.set(
         {
             guests: {
                 [session.uid]: {
@@ -76,5 +85,4 @@ export const joinTable = async (
         },
         { merge: true },
     );
-    return res;
 };
