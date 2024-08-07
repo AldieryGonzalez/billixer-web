@@ -1,7 +1,7 @@
 import { doc, Firestore, onSnapshot, Timestamp } from "firebase/firestore";
 import { useEffect, useState } from "react";
 
-type TableData = {
+export type TableData = {
     title: string;
     date: Timestamp;
     description: string;
@@ -10,6 +10,7 @@ type TableData = {
     hasWaitlist: boolean;
     waitlist: string[];
     items: TableItem[];
+    admin: string[];
     guests: Record<string, TableUser>;
 };
 

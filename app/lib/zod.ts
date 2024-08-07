@@ -1,33 +1,16 @@
-import { z, ZodSchema } from "zod";
+import { parseWithZod } from "@conform-to/zod";
+import { ZodObject, ZodRawShape } from "zod";
 
-const FormDataEntryValueSchema = z
-  .union([z.string(), z.instanceof(File)])
-  .nullable();
-
-function formData() {
-  return z.instanceof(FormData).transform((formData) => {
-    const entries: Array<[string, FormDataEntryValue | FormDataEntryValue[]]> =
-      [];
-
-    for (const key of formData.keys()) {
-      const value = formData.getAll(key);
-      if (value.length <= 0) continue;
-      if (value.length === 1) entries.push([key, value[0]]);
-      else entries.push([key, value]);
+export const validateForm = <T extends ZodRawShape>(
+    schema: ZodObject<T>,
+    formData: FormData,
+) => {
+    const submission = parseWithZod(formData, {
+        schema: schema,
+    });
+    if (submission.status !== "success") {
+        console.log(submission.reply());
+        return [false, submission.reply()];
     }
-
-    return z
-      .array(
-        z.tuple([
-          z.string(),
-          FormDataEntryValueSchema.or(FormDataEntryValueSchema.array()),
-        ]),
-      )
-      .transform((entries) => Object.fromEntries(entries))
-      .parse(entries);
-  });
-}
-
-export function parseFormBody<T>(schema: ZodSchema<T>, data: FormData) {
-  return formData().pipe(schema).parse(data);
-}
+    return [true, submission.value];
+};
