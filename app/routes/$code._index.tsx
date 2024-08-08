@@ -14,7 +14,7 @@ export const meta: MetaFunction = () => {
 };
 
 export const useTable = () => {
-    const context = useOutletContext() as TableContextType;
+    const context = useOutletContext<TableContextType>();
     if (!context.data) {
         throw new Error("useTable must be used within a TableContext");
     }
@@ -22,7 +22,7 @@ export const useTable = () => {
 };
 
 export default function Index() {
-    const { data } = useOutletContext() as TableContextType;
+    const { data } = useTable();
 
     return (
         <div className="w-full">
