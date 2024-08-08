@@ -6,6 +6,7 @@ import {
     useLoaderData,
     useRouteError,
 } from "@remix-run/react";
+import { useState } from "react";
 import { LoadingBillixer } from "~/components/loading/logo";
 
 import { useFirebase } from "~/contexts/firebase";
@@ -28,9 +29,12 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 export type TableContextType = {
     session: ReturnType<typeof useLoaderData<typeof loader>>["session"];
     data: NonNullable<ReturnType<typeof useTable>["data"]>;
+    selectedUserID: ReturnType<typeof useState<string | null>>[0];
+    setSelectedUserID: ReturnType<typeof useState<string | null>>[1];
 };
 export default function TableLayout() {
     const { session, code } = useLoaderData<typeof loader>();
+    const [selectedUserID, setSelectedUserID] = useState<string | null>();
     const { db } = useFirebase();
     const { data, error } = useTable(db, code);
     if (error) {
@@ -39,7 +43,18 @@ export default function TableLayout() {
     if (!data) {
         return <LoadingBillixer />;
     }
-    return <Outlet context={{ session, data } as TableContextType} />;
+    return (
+        <Outlet
+            context={
+                {
+                    session,
+                    data,
+                    selectedUserID,
+                    setSelectedUserID,
+                } satisfies TableContextType
+            }
+        />
+    );
 }
 
 export function ErrorBoundary() {
