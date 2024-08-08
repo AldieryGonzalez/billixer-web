@@ -1,4 +1,3 @@
-import { redirect } from "@remix-run/node";
 import { type CreateTableSchemaT } from "~/components/forms/create-form";
 import { JoinTableSchemaT } from "~/components/forms/join-form";
 import { checkSession } from "../auth/auth.server";
@@ -12,7 +11,7 @@ export const createTable = async (
 ) => {
     const session = await checkSession(request);
     if (!session) {
-        throw redirect("/", { status: 301, statusText: "Unauthorized" });
+        throw new Error("Please log in to continue");
     }
     let tableId: string;
     let docExists: boolean;
@@ -52,7 +51,7 @@ export const joinTable = async (
 ) => {
     const session = await checkSession(request);
     if (!session) {
-        throw redirect("/", { status: 301, statusText: "Unauthorized" });
+        throw new Error("Please log in to continue");
     }
     const docRef = db.collection("tables").doc(payload.tableCode);
     const doc = await docRef.get();
