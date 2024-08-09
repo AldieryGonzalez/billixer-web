@@ -1,17 +1,19 @@
-import { useTable } from "~/routes/$code._index";
+import { useOutletContext } from "@remix-run/react";
+import { TableContextType } from "~/routes/$code";
 
 export default function Bill() {
-    const { data: table } = useTable();
+    const { data: table } = useOutletContext<TableContextType>();
     if (!table) {
         return null;
     }
-    const total = table.items.reduce((acc, item) => acc + item.price, 0);
+    const total =
+        table.items.reduce((acc, item) => acc + item.price * 100, 0) / 100;
     // const userTotal = table.items.map((item) => {
     //     item.guests
     // });
     return (
-        <div className="min-w-36 grow drop-shadow-2xl">
-            <div className="reciept border bg-white p-6 py-12 shadow-2xl">
+        <div className="h-full grow drop-shadow-2xl">
+            <div className="reciept h-full border bg-white p-6 py-12 shadow-2xl">
                 <h2 className="mb-3 text-xl font-semibold">Bill</h2>
                 <div className="flex-col gap-4">
                     {table.items.length > 0 ? (

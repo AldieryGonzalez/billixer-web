@@ -43,9 +43,9 @@ export default function App() {
             </head>
             <body>
                 <FirebaseProvider firebaseEnvs={firebaseEnvs}>
-                    <div className="flex h-full min-h-svh flex-col">
+                    <div className="flex h-svh min-h-svh flex-col">
                         <Navbar loggedIn={loggedIn} />
-                        <div className="mx-4 mt-10 flex h-full grow flex-col md:mx-16">
+                        <div className="flex h-full grow">
                             <Outlet />
                         </div>
                     </div>

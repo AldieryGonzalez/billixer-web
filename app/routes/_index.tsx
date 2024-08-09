@@ -75,7 +75,7 @@ export default function Index() {
         }
     }, [result]);
     return (
-        <div className="flex h-full flex-col items-center justify-between gap-6 lg:flex-row">
+        <div className="m-8 flex h-full flex-col items-center justify-between gap-6 lg:mx-20 lg:mt-16 lg:flex-row">
             <div className="flex flex-col items-start justify-start gap-1 text-start lg:self-start">
                 <h1 className="text-3xl lg:text-6xl">
                     Welcome to{" "}

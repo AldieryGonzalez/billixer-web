@@ -13,27 +13,36 @@ export const meta: MetaFunction = () => {
     ];
 };
 
-export const useTable = () => {
-    const context = useOutletContext<TableContextType>();
-    if (!context.data) {
-        throw new Error("useTable must be used within a TableContext");
-    }
-    return context;
-};
+// export const useTable = () => {
+//     const context = useOutletContext<TableContextType>();
+//     if (!context.data) {
+//         throw new Error("useTable must be used within a TableContext");
+//     }
+//     return context;
+// };
 
 export default function Index() {
-    const { data } = useTable();
+    const { data } = useOutletContext<TableContextType>();
 
     return (
-        <div className="w-full">
-            <div className="flex justify-between">
-                <h1 className="text-3xl">{data.title}</h1>
-                <button className="rounded-md border-2 border-black/5 bg-jonquil p-2 shadow hover:bg-jonquil/50">
-                    Table Settings
-                </button>
+        <div className="flex h-full w-full flex-col">
+            <div className="flex flex-col justify-between gap-3 py-4 lg:flex-row">
+                <section className="mx-6 text-center md:text-left">
+                    <h1 className="text-xl font-semibold md:text-3xl">
+                        {data.title}
+                    </h1>
+                    <p className="">{data.description}</p>
+                </section>
+                <div className="flex justify-stretch gap-3 px-3">
+                    <button className="grow rounded-md border-2 border-black/5 bg-jonquil p-2 shadow hover:bg-jonquil/50">
+                        Invite Friends
+                    </button>
+                    <button className="grow rounded-md border-2 border-black/5 bg-jonquil p-2 shadow hover:bg-jonquil/50">
+                        Table Settings
+                    </button>
+                </div>
             </div>
-            <p className="mb-6">{data.description}</p>
-            <div className="flex w-full flex-col justify-between gap-10 md:flex-row">
+            <div className="flex h-full w-full flex-col justify-between gap-10 lg:flex-row lg:px-8">
                 <Users />
                 <Bill />
             </div>

@@ -28,6 +28,7 @@ export const FormInput = ({
                 meta={meta}
                 type="text"
                 placeholder={placeholder}
+                className="text-base"
             />
             {meta.errors && <FieldError>{meta.errors[0]}</FieldError>}
         </Field>
