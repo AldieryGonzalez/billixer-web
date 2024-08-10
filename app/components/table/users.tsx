@@ -1,33 +1,12 @@
 import { useOutletContext } from "@remix-run/react";
-import { ArrowLeftCircle, ArrowRightCircle, Check, X } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { ArrowLeftCircle, ArrowRightCircle } from "lucide-react";
+import { useMemo, useState } from "react";
+import useWindowSize from "~/hooks/useWindowSize";
 import { cn } from "~/lib/utils";
 import { TableContextType } from "~/routes/$code";
 import { Button } from "../ui/button";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "../ui/select";
 import Avatar from "./avatar";
-
-const useWindowSize = () => {
-    const [width, setWidth] = useState(0);
-    useEffect(() => {
-        const handleResize = () => setWidth(window.innerWidth);
-        window.addEventListener("resize", handleResize);
-        return () => window.removeEventListener("resize", handleResize);
-    }, []);
-    if (width >= 1024) {
-        return 20;
-    } else if (width >= 640) {
-        return 11;
-    } else {
-        return 8;
-    }
-};
+import UserInfo from "./user-info";
 
 export default function Users() {
     const {
@@ -57,11 +36,8 @@ export default function Users() {
                 .sort((a, b) => a.name.localeCompare(b.name)),
         [table.guests],
     );
-    const usersPerPage = useWindowSize();
-    // const mockUsers = Array.from({ length: 40 }, (_, i) => ({
-    //     uid: `${i}`,
-    //     name: `${i}`,
-    // }));
+    const width = useWindowSize();
+    const usersPerPage = width >= 1024 ? 20 : width >= 640 ? 11 : 8;
     const pagedUsers = tableUsers.slice(
         page * usersPerPage,
         page * usersPerPage + usersPerPage,
@@ -129,70 +105,5 @@ export default function Users() {
                 ))}
             </div>
         </div>
-    );
-}
-type TableUser = {
-    shortName: string;
-    cardholderInfo: TableContextType["data"]["guests"][""];
-    uid: string;
-    name: string;
-    confirmed: boolean;
-    paid: boolean;
-    cardholder: string;
-};
-type UserInfoProps = {
-    selectedUser: TableUser;
-    tableUsers: TableUser[];
-    isSelectedUser: boolean;
-};
-
-function UserInfo({ selectedUser, isSelectedUser, tableUsers }: UserInfoProps) {
-    return (
-        <>
-            <div className="flex h-full flex-col items-stretch gap-3">
-                <p className="text-center text-sm font-bold md:text-lg">{`${selectedUser.name}${isSelectedUser ? " (Me)" : ""}`}</p>
-                <div className="flex justify-around gap-2">
-                    <span className="font-bold">${"1,123.45"}</span>
-                    {isSelectedUser && (
-                        <>
-                            {selectedUser.confirmed ? (
-                                <button className="rounded-full border-2 border-green-500/15 bg-green-600/55 p-1 shadow-inner">
-                                    <Check size={14} />
-                                </button>
-                            ) : (
-                                <button className="rounded-full border-2 border-black/55 bg-red-500/25 p-1 shadow-md shadow-black/25">
-                                    <Check size={14} />
-                                </button>
-                            )}
-                        </>
-                    )}
-                </div>
-                <div className="mt-auto rounded-md border-2 border-black/15 bg-background bg-white p-1.5 shadow-md">
-                    <p>Paying: </p>
-                    {isSelectedUser ? (
-                        <Select defaultValue={selectedUser.cardholder}>
-                            <SelectTrigger>
-                                <SelectValue
-                                    placeholder={
-                                        selectedUser.cardholderInfo.name
-                                    }
-                                />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {tableUsers.map((user) => (
-                                    <SelectItem key={user.uid} value={user.uid}>
-                                        {user.shortName}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    ) : (
-                        <p className="justify-end text-center">
-                            {selectedUser.cardholderInfo.name}
-                        </p>
-                    )}
-                </div>
-            </div>
-        </>
     );
 }
