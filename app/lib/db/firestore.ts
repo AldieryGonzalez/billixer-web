@@ -1,4 +1,11 @@
-import { doc, Firestore, onSnapshot, Timestamp } from "firebase/firestore";
+import {
+    arrayUnion,
+    doc,
+    Firestore,
+    onSnapshot,
+    setDoc,
+    Timestamp,
+} from "firebase/firestore";
 import { useEffect, useState } from "react";
 
 export type TableData = {
@@ -58,4 +65,19 @@ export function useTable(db: Firestore, code: string) {
     }, [db, code]);
 
     return { data, error };
+}
+
+export async function addTableItem(
+    db: Firestore,
+    code: string,
+    item: TableItem,
+) {
+    const docRef = doc(db, "tables", code);
+    const test = await setDoc(
+        docRef,
+        {
+            items: arrayUnion(item),
+        },
+        { merge: true },
+    );
 }
