@@ -48,7 +48,7 @@ export default function Users() {
     const handleNextPage = () => setPage((p) => Math.min(p + 1, maxPage));
     const handlePrevPage = () => setPage((p) => Math.max(p - 1, 0));
     return (
-        <div className="h-fit grow-[2] flex-col bg-jonquil p-4 shadow-xl lg:rounded-md">
+        <div className="h-fit w-full flex-col bg-jonquil p-4 shadow-xl lg:w-2/3 lg:rounded-md">
             {/* Header */}
             <div className="mb-2 flex items-center justify-between">
                 <h2 className="text-xl font-semibold">Users</h2>
