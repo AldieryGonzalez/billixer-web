@@ -1,6 +1,8 @@
 import { useOutletContext } from "@remix-run/react";
 import { ArrowLeftCircle, ArrowRightCircle } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useState } from "react";
+import { useTableGuests } from "~/hooks/useTableGuests";
+import { useTableItems } from "~/hooks/useTableItems";
 import useWindowSize from "~/hooks/useWindowSize";
 import { cn } from "~/lib/utils";
 import { TableContextType } from "~/routes/$code";
@@ -16,26 +18,9 @@ export default function Users() {
         setSelectedUserID,
     } = useOutletContext<TableContextType>();
     const [page, setPage] = useState(0);
-    const tableUsers = useMemo(
-        () =>
-            Object.entries(table.guests)
-                .map(([uid, guest]) => {
-                    const parts = guest.name.split(" ");
-                    const firstName = parts[0];
-                    const initials = parts
-                        .slice(1)
-                        .map((part) => part.charAt(0).toUpperCase() + ".");
-                    const shortName = [firstName, ...initials].join(" ");
-                    return {
-                        ...guest,
-                        shortName,
-                        cardholderInfo: table.guests[guest.cardholder],
-                        uid: uid,
-                    };
-                })
-                .sort((a, b) => a.name.localeCompare(b.name)),
-        [table.guests],
-    );
+    const tableUsers = useTableGuests(table);
+    const tableItems = useTableItems(table);
+    const tableTotal = tableItems.reduce((acc, item) => acc + item.price, 0);
     const width = useWindowSize();
     const usersPerPage = width >= 1024 ? 20 : width >= 640 ? 11 : 8;
     const pagedUsers = tableUsers.slice(
@@ -74,7 +59,7 @@ export default function Users() {
                         <>
                             <div className="flex flex-col items-center gap-2">
                                 Table Total
-                                <span className="font-bold">${"0"}</span>
+                                <span className="font-bold">${tableTotal}</span>
                             </div>
                         </>
                     )}

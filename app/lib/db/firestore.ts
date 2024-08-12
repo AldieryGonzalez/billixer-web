@@ -1,5 +1,4 @@
 import {
-    arrayUnion,
     doc,
     Firestore,
     onSnapshot,
@@ -16,7 +15,7 @@ export type TableData = {
     active: boolean;
     hasWaitlist: boolean;
     waitlist: string[];
-    items: TableItem[];
+    items: Record<string, TableItem>;
     admin: string[];
     guests: Record<string, TableUser>;
 };
@@ -70,13 +69,45 @@ export function useTable(db: Firestore, code: string) {
 export async function addTableItem(
     db: Firestore,
     code: string,
-    item: TableItem,
+    newItem: TableItem,
+    itemID: string,
 ) {
     const docRef = doc(db, "tables", code);
-    const test = await setDoc(
+    await setDoc(
         docRef,
         {
-            items: arrayUnion(item),
+            items: { [itemID]: newItem },
+        },
+        { merge: true },
+    );
+}
+
+export async function removeTableItem(
+    db: Firestore,
+    code: string,
+    itemID: string,
+) {
+    const docRef = doc(db, "tables", code);
+    await setDoc(
+        docRef,
+        {
+            items: { [itemID]: null },
+        },
+        { merge: true },
+    );
+}
+
+export async function updateTableItem(
+    db: Firestore,
+    code: string,
+    item: TableItem,
+    itemID: string,
+) {
+    const docRef = doc(db, "tables", code);
+    await setDoc(
+        docRef,
+        {
+            items: { [itemID]: item },
         },
         { merge: true },
     );

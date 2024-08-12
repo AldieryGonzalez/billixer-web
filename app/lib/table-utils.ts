@@ -1,18 +1,30 @@
-import { TableContextType } from "~/routes/$code";
+import { useTableItems } from "~/hooks/useTableItems";
 
-export function calculateTableTotal({ data }: TableContextType) {
-    return data.items.reduce((acc, item) => acc + item.price * 100, 0) / 100;
+export function calculateTableTotal(
+    tableItems: ReturnType<typeof useTableItems>,
+) {
+    return tableItems.reduce((acc, item) => acc + item.price * 100, 0) / 100;
 }
 
-export function getUserSplit({ data }: TableContextType, uid: string) {
-    const userItems = data.items.filter((item) => {
+export function getUserSplit(
+    tableItems: ReturnType<typeof useTableItems>,
+    uid: string,
+) {
+    const userItems = tableItems.filter((item) => {
         item.guests.includes(uid);
     });
+    userItems;
+    // This is incomplete // TODO: IMPLEMENT
+    return null;
 }
 
-export function getItemSplit(item: TableContextType["data"]["items"][0]) {
+export function getItemSplit(item: ReturnType<typeof useTableItems>[0]) {
     const total = item.price * item.quantity;
     const split = calculateFairSplit(total, item.guests.length);
+    split;
+
+    // This is incomplete // TODO: IMPLEMENT
+    return null;
 }
 function calculateFairSplit(
     totalAmount: number,

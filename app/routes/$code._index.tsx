@@ -2,7 +2,7 @@ import { MetaFunction } from "@remix-run/node";
 import { useOutletContext } from "@remix-run/react";
 import { TableContextType } from "./$code";
 
-import Bill from "~/components/table/bill";
+import Bill from "~/components/table/bill/bill";
 import Users from "~/components/table/users";
 
 export const meta: MetaFunction = () => {
