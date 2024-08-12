@@ -145,3 +145,21 @@ export async function updateTableItem(
         { merge: true },
     );
 }
+
+export async function toggleConfirmUser(
+    db: Firestore,
+    code: string,
+    uid: string,
+    confirmed: boolean,
+) {
+    const docRef = doc(db, "tables", code);
+    await setDoc(
+        docRef,
+        {
+            guests: {
+                [uid]: { confirmed },
+            },
+        },
+        { merge: true },
+    );
+}

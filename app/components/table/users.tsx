@@ -48,7 +48,12 @@ export default function Users() {
             </div>
             <div className="grid grid-cols-4 grid-rows-2 gap-1 sm:grid-cols-5 lg:grid-cols-6">
                 {/* Current User */}
-                <div className="col-span-2 row-span-2 rounded-md border-2 bg-background p-2 shadow">
+                <div
+                    className={cn(
+                        "col-span-2 row-span-2 rounded-md border-2 bg-background p-2 shadow",
+                        selectedUser?.confirmed && "bg-emerald-300",
+                    )}
+                >
                     {selectedUser ? (
                         <UserInfo
                             isSelectedUser={isSelectedUser}
