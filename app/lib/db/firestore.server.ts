@@ -37,7 +37,7 @@ export const createTable = async (
             },
         },
         hasWaitlist: payload.waitingRoom,
-        items: [],
+        items: {},
         title: payload.title,
         waitlist: [],
     } as TableData;

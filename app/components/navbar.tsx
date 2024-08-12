@@ -25,7 +25,7 @@ export default function Navbar({ loggedIn }: NavbarProps) {
     }
 
     return (
-        <header className="relative flex h-14 items-center justify-end bg-emerald-500 px-4 md:px-16">
+        <header className="relative flex h-14 min-h-12 items-center justify-end bg-emerald-500 px-4 md:px-16">
             <div className="absolute left-4 flex gap-2 font-lobster text-4xl md:left-1/2 md:-translate-x-1/2">
                 <h1 className="text-4xl">Billixer</h1>
                 <Logo className="aspect-square h-10" />
