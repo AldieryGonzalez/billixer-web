@@ -1,6 +1,11 @@
+import { useOutletContext } from "@remix-run/react";
 import { Pencil, Trash2 } from "lucide-react";
 import { Button } from "~/components/ui/button";
+import { useFirebase } from "~/contexts/firebase";
 import { useTableItems } from "~/hooks/useTableItems";
+import { toggleClaimItem } from "~/lib/db/firestore";
+import { cn } from "~/lib/utils";
+import { TableContextType } from "~/routes/$code";
 
 export default function BaseItem({
     item,
@@ -13,12 +18,21 @@ export default function BaseItem({
     handleSetEdit: () => void;
     handleSetDelete: () => void;
 }) {
+    const { data, session } = useOutletContext<TableContextType>();
+    const { db } = useFirebase();
+    const isClaimed = item.guests.includes(session.uid);
     return (
         <>
             <Button
                 size="xs"
                 variant="item"
-                className="col-span-3 grid grid-cols-subgrid"
+                className={cn(
+                    "col-span-3 grid grid-cols-subgrid",
+                    isClaimed && "bg-jonquil/70",
+                )}
+                onClick={() =>
+                    toggleClaimItem(db, session.uid, data.code, item)
+                }
                 disabled={isEditing}
             >
                 <span className="justify-self-start text-sm">
