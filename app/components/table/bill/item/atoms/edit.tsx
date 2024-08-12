@@ -11,10 +11,10 @@ import { ItemSchema, ItemSchemaT } from "../../bill";
 
 export default function EditItem({
     item,
-    removeEdit,
+    handleCancel,
 }: {
     item: ReturnType<typeof useTableItems>[0];
-    removeEdit: () => void;
+    handleCancel: () => void;
 }) {
     const { db } = useFirebase();
     const { data: table, selectedUserID } =
@@ -47,12 +47,12 @@ export default function EditItem({
                         item.uid,
                     ),
                     {
-                        loading: "Adding item...",
-                        success: "Item added",
+                        loading: "Editing item...",
+                        success: "Success!",
                         error: "Error adding item",
                     },
                 );
-                removeEdit();
+                handleCancel();
             }
         },
     });
@@ -88,7 +88,8 @@ export default function EditItem({
             </button>
             <button
                 className="border border-black/10 bg-slate-200 py-0.5 text-center text-sm hover:bg-slate-300"
-                onClick={removeEdit}
+                onClick={handleCancel}
+                type="reset"
             >
                 ❌
             </button>

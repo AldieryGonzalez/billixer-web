@@ -37,7 +37,11 @@ export default function BaseItem({
                         className="text-xs"
                         onClick={handleSetEdit}
                     >
-                        <Pencil strokeWidth={1} fill="hsl(var(--jonquil))" />
+                        <Pencil
+                            strokeWidth={1}
+                            size={18}
+                            fill="hsl(var(--jonquil))"
+                        />
                     </Button>
                     <Button
                         size="xs"

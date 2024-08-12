@@ -1,4 +1,5 @@
 import {
+    deleteField,
     doc,
     Firestore,
     onSnapshot,
@@ -91,7 +92,7 @@ export async function removeTableItem(
     await setDoc(
         docRef,
         {
-            items: { [itemID]: null },
+            items: { [itemID]: deleteField() },
         },
         { merge: true },
     );

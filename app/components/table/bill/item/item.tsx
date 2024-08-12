@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTableItems } from "~/hooks/useTableItems";
 import BaseItem from "./atoms/base";
 import DeleteItem from "./atoms/delete";
@@ -13,6 +13,12 @@ export default function Item({
 }) {
     const [edit, setEdit] = useState(false);
     const [deleting, setDeleting] = useState(false);
+    useEffect(() => {
+        if (!isEditing) {
+            setEdit(false);
+            setDeleting(false);
+        }
+    }, [isEditing]);
     const handleSetEdit = () => {
         setEdit(true);
         setDeleting(false);
@@ -23,8 +29,9 @@ export default function Item({
     };
     const handleRemoveEdit = () => setEdit(false);
     const handleRemoveDelete = () => setDeleting(false);
-    if (edit) return <EditItem item={item} removeEdit={handleRemoveEdit} />;
-    if (deleting) return <DeleteItem removeDelete={handleRemoveDelete} />;
+    if (edit) return <EditItem item={item} handleCancel={handleRemoveEdit} />;
+    if (deleting)
+        return <DeleteItem item={item} handleCancel={handleRemoveDelete} />;
     return (
         <BaseItem
             item={item}
