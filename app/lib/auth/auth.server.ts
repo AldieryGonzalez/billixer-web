@@ -29,6 +29,9 @@ export async function checkSession(request: Request) {
     const session = await getSession(request.headers.get("cookie"));
     const token = session.get("token");
     if (!token) return null;
+    const session = await getSession(request.headers.get("cookie"));
+    const token = session.get("token");
+    if (!token) return null;
 
     try {
         const decodedClaims = await serverAuth.verifySessionCookie(token);
@@ -41,16 +44,24 @@ export async function checkSession(request: Request) {
 export async function sessionLogin(
     request: Request,
     idToken: string,
-    redirectTo: string,
+    redirectTo?: string,
 ) {
     const session = await getSession(request.headers.get("cookie"));
     const token = await createSessionToken(idToken);
     session.set("token", token);
-    return redirect(redirectTo, {
-        headers: {
-            "Set-Cookie": await commitSession(session),
-        },
-    });
+    if (redirectTo) {
+        return redirect(redirectTo, {
+            headers: {
+                "Set-Cookie": await commitSession(session),
+            },
+        });
+    } else {
+        return new Response(null, {
+            headers: {
+                "Set-Cookie": await commitSession(session),
+            },
+        });
+    }
 }
 
 export async function sessionLogout(request: Request, redirectTo: string) {

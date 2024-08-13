@@ -1,7 +1,7 @@
 import { useFetcher } from "@remix-run/react";
 import { signInWithGoogle } from "~/lib/auth/auth";
 import { useFirebase } from "~/lib/firebase";
-import { ActionData } from "~/routes/auth.login";
+import { LoginActionDataT } from "~/routes/auth.login";
 import Logo from "./icons/logo";
 
 type NavbarProps = {
@@ -14,7 +14,7 @@ export default function Navbar({ loggedIn }: NavbarProps) {
     async function login() {
         const idToken = await signInWithGoogle(auth);
         if (!idToken) return console.error("No idToken");
-        fetcher.submit({ idToken } satisfies ActionData, {
+        fetcher.submit({ idToken } satisfies LoginActionDataT, {
             method: "POST",
             action: "/auth/login",
         });
