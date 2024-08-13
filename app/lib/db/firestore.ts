@@ -102,7 +102,7 @@ export async function toggleClaimItem(
 export async function addTableItem(
     db: Firestore,
     code: string,
-    newItem: ClientTableItem,
+    newItem: TableItem,
     itemID: string,
 ) {
     const docRef = doc(db, "tables", code);
