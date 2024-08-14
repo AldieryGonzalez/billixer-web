@@ -9,9 +9,9 @@ import {
 import { useState } from "react";
 import { LoadingBillixer } from "~/components/loading/logo";
 
-import { useFirebase } from "~/contexts/firebase";
 import { checkSession } from "~/lib/auth/auth.server";
 import { useTable } from "~/lib/db/firestore";
+import { useFirebase } from "~/lib/firebase";
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
     if (!params.code) {

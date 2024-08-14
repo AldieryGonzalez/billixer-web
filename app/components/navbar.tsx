@@ -1,6 +1,6 @@
 import { useFetcher } from "@remix-run/react";
-import { useFirebase } from "~/contexts/firebase";
 import { signInWithGoogle } from "~/lib/auth/auth";
+import { useFirebase } from "~/lib/firebase";
 import { ActionData } from "~/routes/auth.login";
 import Logo from "./icons/logo";
 

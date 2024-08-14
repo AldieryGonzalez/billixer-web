@@ -1,9 +1,9 @@
 import { useOutletContext } from "@remix-run/react";
 import { Pencil, Trash2 } from "lucide-react";
 import { Button } from "~/components/ui/button";
-import { useFirebase } from "~/contexts/firebase";
 import { useTableItems } from "~/hooks/useTableItems";
 import { toggleClaimItem } from "~/lib/db/firestore";
+import { useFirebase } from "~/lib/firebase";
 import { cn } from "~/lib/utils";
 import { TableContextType } from "~/routes/$code";
 

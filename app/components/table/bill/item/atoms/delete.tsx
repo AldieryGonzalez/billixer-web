@@ -1,9 +1,9 @@
 import { useOutletContext } from "@remix-run/react";
 import { Trash2, Undo2 } from "lucide-react";
 import { Button } from "~/components/ui/button";
-import { useFirebase } from "~/contexts/firebase";
 import { useTableItems } from "~/hooks/useTableItems";
 import { removeTableItem } from "~/lib/db/firestore";
+import { useFirebase } from "~/lib/firebase";
 import { TableContextType } from "~/routes/$code";
 
 export default function DeleteItem({
