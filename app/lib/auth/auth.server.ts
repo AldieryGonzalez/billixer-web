@@ -13,17 +13,6 @@ const { getSession, commitSession, destroySession } =
             httpOnly: true,
         },
     });
-createCookieSessionStorage({
-    cookie: {
-        name: "__session",
-        secure: process.env.NODE_ENV === "production",
-        secrets: [process.env.SESSION_SECRET!],
-        sameSite: "lax",
-        path: "/",
-        maxAge: 60 * 60 * 24, // 24 hours
-        httpOnly: true,
-    },
-});
 
 async function createSessionToken(idToken: string) {
     const decodedToken = await serverAuth.verifyIdToken(idToken);
@@ -53,21 +42,18 @@ export async function sessionLogin(
     request: Request,
     idToken: string,
     redirectTo?: string,
-    request: Request,
-    idToken: string,
-    redirectTo?: string,
 ) {
     const session = await getSession(request.headers.get("cookie"));
     const token = await createSessionToken(idToken);
     session.set("token", token);
     if (redirectTo) {
-        return redirect(redirectTo, {
+        throw redirect(redirectTo, {
             headers: {
                 "Set-Cookie": await commitSession(session),
             },
         });
     } else {
-        return new Response(null, {
+        throw new Response(null, {
             headers: {
                 "Set-Cookie": await commitSession(session),
             },

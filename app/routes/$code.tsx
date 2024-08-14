@@ -20,7 +20,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     const sessionInfo = await checkSession(request);
     if (!sessionInfo) {
         console.error("No session found");
-        return redirect(`/verify/${params.code}`);
+        return redirect(`/?code=${params.code}`);
     }
     return json({ session: sessionInfo, code: params.code });
 }
