@@ -3,9 +3,9 @@ import { parseWithZod } from "@conform-to/zod";
 import { Form, useOutletContext } from "@remix-run/react";
 import { toast } from "sonner";
 import { InputConform as Input } from "~/components/conform/input";
-import { useFirebase } from "~/contexts/firebase";
 import { useTableItems } from "~/hooks/useTableItems";
 import { updateTableItem } from "~/lib/db/firestore";
+import { useFirebase } from "~/lib/firebase";
 import { TableContextType } from "~/routes/$code";
 import { ItemSchema, ItemSchemaT } from "../../bill";
 

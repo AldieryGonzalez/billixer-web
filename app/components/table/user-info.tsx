@@ -1,8 +1,8 @@
 import { useOutletContext } from "@remix-run/react";
 import { Check } from "lucide-react";
-import { useFirebase } from "~/contexts/firebase";
 import { useTableItems } from "~/hooks/useTableItems";
 import { toggleConfirmUser } from "~/lib/db/firestore";
+import { useFirebase } from "~/lib/firebase";
 import { cn } from "~/lib/utils";
 import { TableContextType } from "~/routes/$code";
 import {

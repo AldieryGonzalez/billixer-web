@@ -11,14 +11,14 @@ import {
 import { getFirebaseEnvs } from "firebase.config";
 import Navbar from "./components/navbar";
 import { Toaster } from "./components/ui/sonner";
-import { FirebaseProvider } from "./contexts/firebase";
 import { checkSession } from "./lib/auth/auth.server";
+import { useFirebase } from "./lib/firebase";
 import "./tailwind.css";
-import Envs from "./ui/envs";
+import Envs, { FirebaseConfig } from "./ui/envs";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
     const res = await checkSession(request);
-    const firebaseEnvs = getFirebaseEnvs();
+    const firebaseEnvs = getFirebaseEnvs() satisfies FirebaseConfig;
     return {
         loggedIn: res ? true : false,
         sesssionInfo: res,
@@ -30,6 +30,7 @@ export default function App() {
     const { sesssionInfo, loggedIn, firebaseEnvs } =
         useLoaderData<typeof loader>();
     sesssionInfo;
+    useFirebase(true);
     return (
         <html lang="en">
             <head>
@@ -42,14 +43,12 @@ export default function App() {
                 <Links />
             </head>
             <body>
-                <FirebaseProvider firebaseEnvs={firebaseEnvs}>
-                    <div className="flex h-svh min-h-svh flex-col">
-                        <Navbar loggedIn={loggedIn} />
-                        <div className="flex h-full grow">
-                            <Outlet />
-                        </div>
+                <div className="flex h-svh min-h-svh flex-col">
+                    <Navbar loggedIn={loggedIn} />
+                    <div className="flex h-full grow">
+                        <Outlet />
                     </div>
-                </FirebaseProvider>
+                </div>
                 <Toaster />
                 <ScrollRestoration />
                 <Envs {...firebaseEnvs} />
