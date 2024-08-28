@@ -1,22 +1,40 @@
+import { FirebaseError } from "firebase/app";
 import {
     Auth,
     GoogleAuthProvider,
-    linkWithPopup,
     signInAnonymously,
+    signInWithEmailAndPassword,
+    signInWithPopup,
 } from "firebase/auth";
+
+export async function signInWithEmail(
+    clientAuth: Auth,
+    email: string,
+    password: string,
+) {
+    try {
+        const userCredential = await signInWithEmailAndPassword(
+            clientAuth,
+            email,
+            password,
+        );
+        const idToken = await userCredential.user.getIdToken();
+        return idToken;
+    } catch (error) {
+        console.error("Error signing in with email and password", error);
+    }
+}
 
 export async function signInWithGoogle(clientAuth: Auth) {
     const provider = new GoogleAuthProvider();
     if (!clientAuth.currentUser) return;
-
     try {
-        const userCredential = await linkWithPopup(
-            clientAuth.currentUser,
-            provider,
-        );
-        return await userCredential.user.getIdToken();
+        const userCredential = await signInWithPopup(clientAuth, provider);
+        const idToken = await userCredential.user.getIdToken();
+        return idToken;
     } catch (error) {
-        console.error("Error signing in with Google", error);
+        const tError = error as FirebaseError;
+        console.log({ ...tError });
     }
 }
 

@@ -1,15 +1,18 @@
-import { GoogleIcon } from "../icons/google";
+import large from "~/assets/google-lg.png";
+import small from "~/assets/google-sm.png";
 
-export function GoogleButton() {
+export function GoogleButton(
+    props: React.ButtonHTMLAttributes<HTMLButtonElement>,
+) {
     return (
-        <button className="gsi-material-button">
-            <div className="gsi-material-button-state"></div>
-            <div className="gsi-material-button-content-wrapper">
-                <div className="gsi-material-button-icon">
-                    <GoogleIcon />
-                </div>
+        <>
+            <button {...props} className="hidden md:block">
+                <img className="h-9" src={large} alt="Continue with Google" />
                 <span className="sr-only">Continue with Google</span>
-            </div>
-        </button>
+            </button>
+            <button {...props} className="md:hidden">
+                <img className="h-9" src={small} alt="Continue with Google" />
+            </button>
+        </>
     );
 }

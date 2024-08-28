@@ -51,7 +51,6 @@ export default function App() {
         }
         fetchData();
     }, [auth, loggedIn, fetcher]);
-    console.log(sessionInfo);
     return (
         <html lang="en">
             <head>
@@ -65,7 +64,7 @@ export default function App() {
             </head>
             <body>
                 <div className="flex h-svh min-h-svh flex-col">
-                    <Navbar provider={sessionInfo?.firebase.sign_in_provider} />
+                    <Navbar sessionInfo={sessionInfo} />
                     <div className="flex h-full grow">
                         <Outlet />
                     </div>
