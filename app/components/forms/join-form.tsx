@@ -20,7 +20,11 @@ export const JoinTableSchema = z.object({
 });
 export type JoinTableSchemaT = z.infer<typeof JoinTableSchema>;
 
-export default function JoinForm() {
+export default function JoinForm({
+    defaultCode,
+}: {
+    defaultCode: string | null;
+}) {
     const actionResult = useActionData<typeof action>();
 
     const s =
@@ -32,6 +36,7 @@ export default function JoinForm() {
         shouldValidate: "onBlur",
         shouldRevalidate: "onInput",
         lastResult: s?.error,
+        defaultValue: { tableCode: defaultCode },
         onValidate({ formData }) {
             return parseWithZod(formData, { schema: JoinTableSchema });
         },

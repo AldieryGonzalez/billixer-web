@@ -6,13 +6,17 @@ import {
     Outlet,
     Scripts,
     ScrollRestoration,
+    useFetcher,
     useLoaderData,
 } from "@remix-run/react";
 import { getFirebaseEnvs } from "firebase.config";
-import Navbar from "./components/navbar";
+import { signInAnonymously } from "firebase/auth";
+import { useEffect } from "react";
+import Navbar from "./components/navbar/navbar";
 import { Toaster } from "./components/ui/sonner";
 import { checkSession } from "./lib/auth/auth.server";
 import { useFirebase } from "./lib/firebase";
+import { LoginActionDataT } from "./routes/auth.login";
 import "./tailwind.css";
 import Envs, { FirebaseConfig } from "./ui/envs";
 
@@ -21,16 +25,32 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     const firebaseEnvs = getFirebaseEnvs() satisfies FirebaseConfig;
     return {
         loggedIn: res ? true : false,
-        sesssionInfo: res,
+        sessionInfo: res,
         firebaseEnvs,
     };
 };
 
 export default function App() {
-    const { sesssionInfo, loggedIn, firebaseEnvs } =
+    const { sessionInfo, loggedIn, firebaseEnvs } =
         useLoaderData<typeof loader>();
-    sesssionInfo;
-    useFirebase(true);
+    const { auth } = useFirebase(true);
+    const fetcher = useFetcher();
+    useEffect(() => {
+        async function fetchData() {
+            if (!loggedIn && !auth.currentUser) {
+                const user = await signInAnonymously(auth);
+                const idToken = await user.user.getIdToken();
+                fetcher.submit(
+                    { idToken, redirect: "/" } satisfies LoginActionDataT,
+                    {
+                        method: "POST",
+                        action: "/auth/login",
+                    },
+                );
+            }
+        }
+        fetchData();
+    }, [auth, loggedIn, fetcher]);
     return (
         <html lang="en">
             <head>
@@ -44,7 +64,7 @@ export default function App() {
             </head>
             <body>
                 <div className="flex h-svh min-h-svh flex-col">
-                    <Navbar loggedIn={loggedIn} />
+                    <Navbar sessionInfo={sessionInfo} />
                     <div className="flex h-full grow">
                         <Outlet />
                     </div>

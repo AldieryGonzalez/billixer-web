@@ -41,16 +41,24 @@ export async function checkSession(request: Request) {
 export async function sessionLogin(
     request: Request,
     idToken: string,
-    redirectTo: string,
+    redirectTo?: string,
 ) {
     const session = await getSession(request.headers.get("cookie"));
     const token = await createSessionToken(idToken);
     session.set("token", token);
-    return redirect(redirectTo, {
-        headers: {
-            "Set-Cookie": await commitSession(session),
-        },
-    });
+    if (redirectTo) {
+        throw redirect(redirectTo, {
+            headers: {
+                "Set-Cookie": await commitSession(session),
+            },
+        });
+    } else {
+        throw new Response(null, {
+            headers: {
+                "Set-Cookie": await commitSession(session),
+            },
+        });
+    }
 }
 
 export async function sessionLogout(request: Request, redirectTo: string) {

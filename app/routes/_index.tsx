@@ -1,5 +1,6 @@
 import {
     json,
+    LoaderFunctionArgs,
     type ActionFunctionArgs,
     type MetaFunction,
 } from "@remix-run/node";
@@ -7,6 +8,7 @@ import {
     isRouteErrorResponse,
     Navigate,
     useActionData,
+    useLoaderData,
     useRouteError,
 } from "@remix-run/react";
 import { ErrorBoundaryComponent } from "@remix-run/react/dist/routeModules";
@@ -23,6 +25,12 @@ export const meta: MetaFunction = () => {
         { title: "Billixer" },
         { name: "description", content: "App for splitting checks and bills" },
     ];
+};
+
+export const loader = ({ request }: LoaderFunctionArgs) => {
+    const url = new URL(request.url);
+    const code = url.searchParams.get("code");
+    return json({ code });
 };
 
 export const action = async ({ request }: ActionFunctionArgs) => {
@@ -58,6 +66,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 };
 
 export default function Index() {
+    const { code } = useLoaderData<typeof loader>();
     const result = useActionData<typeof action>();
     useEffect(() => {
         if (result && result.status == "error") {
@@ -87,7 +96,7 @@ export default function Index() {
                 {/* TODO: Add List of features and pie chart graphic to fill desktop mode */}
             </div>
             <div className="min-w-80 max-w-md grow">
-                <JoinForm />
+                <JoinForm defaultCode={code} />
                 <p className="mt-4 text-center">or</p>
                 <CreateDialog />
             </div>
