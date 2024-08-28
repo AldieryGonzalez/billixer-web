@@ -40,7 +40,7 @@ export default function BaseItem({
                 </span>
                 <span className="w-full truncate text-left">{item.name}</span>
                 <span className="items-end justify-self-end">
-                    ${item.price}
+                    ${item.price.toFixed(2)}
                 </span>
             </Button>
             {isEditing && (

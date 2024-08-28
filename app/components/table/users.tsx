@@ -20,7 +20,10 @@ export default function Users() {
     const [page, setPage] = useState(0);
     const tableUsers = useTableGuests(table);
     const tableItems = useTableItems(table);
-    const tableTotal = tableItems.reduce((acc, item) => acc + item.price, 0);
+    const tableTotal = tableItems.reduce(
+        (acc, item) => (acc * 100 + item.price * 100) / 100,
+        0,
+    );
     const width = useWindowSize();
     const usersPerPage = width >= 1024 ? 20 : width >= 640 ? 11 : 8;
     const pagedUsers = tableUsers.slice(

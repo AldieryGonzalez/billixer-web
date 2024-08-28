@@ -18,8 +18,8 @@ export const ItemSchema = z.object({
         .positive()
         .refine(
             (v) =>
-                v.toString().includes(".") &&
-                v.toString().split(".")[1].length === 2,
+                v.toFixed(2).includes(".") &&
+                v.toFixed(2).split(".")[1].length >= 2,
             { message: "Price must be in the format xx.xx" },
         ),
 });
