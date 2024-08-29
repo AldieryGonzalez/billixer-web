@@ -18,9 +18,37 @@ export function generateTableCode() {
     return code;
 }
 
+type NameStyle = "first" | "initials" | "first+initials";
+export function shortenName(name: string, style: NameStyle = "first"): string {
+    switch (style) {
+        case "first":
+            return name.split(" ")[0];
+        case "initials":
+            return name
+                .split(" ")
+                .map((n) => n[0])
+                .join("");
+        case "first+initials": {
+            const s = name.split(" ");
+            const first = s[0];
+            return `${first} ${shortenName(name.slice(first.length), "initials")}`;
+        }
+    }
+}
+
+export function nameToHexColor(name: string): string {
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) {
+        hash = name.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    const color = (hash & 0x00ffffff).toString(16).toUpperCase();
+    return "000000".substring(0, 6 - color.length) + color;
+}
+
 function isBrowser() {
     return typeof window !== "undefined";
 }
+
 export function getFirebaseConfig() {
     const env = isBrowser() ? window.ENV : process.env;
     return {

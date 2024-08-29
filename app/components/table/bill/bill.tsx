@@ -54,10 +54,11 @@ export default function Bill() {
                 </button>
                 <p className="text-center">{`$${total}`}</p>
                 <div className="grid grid-cols-[4ch_1fr_6ch_min-content_min-content] items-center gap-1 border-b-2 border-dashed border-black/40 pb-2 pt-1">
-                    <div className="col-span-3 grid grid-cols-subgrid border-b-2 border-dashed border-black/40">
+                    <div className="col-span-4 grid grid-cols-subgrid border-b-2 border-dashed border-black/40">
                         <span className="text-xs">Qty</span>
                         <span className="text-xs">Item</span>
                         <span className="text-xs">Price</span>
+                        {!isEditing && <span className="text-xs"></span>}
                     </div>
                     {currentItems.length > 0 ? (
                         currentItems.map((item, i) => (
