@@ -85,8 +85,9 @@ export default function BaseItem({
                     <Accordion type="single" collapsible className="w-full">
                         <AccordionItem
                             value="item-1"
+                            className="border-b-2 border-l-4 px-2"
                             style={{
-                                backgroundColor: `#${nameToHexColor("Aldiery Rene Gonzalez")}`,
+                                borderLeftColor: `#${nameToHexColor("Aldiery Rene Gonzalez")}`,
                             }}
                         >
                             <AccordionTrigger>Aldiery</AccordionTrigger>
